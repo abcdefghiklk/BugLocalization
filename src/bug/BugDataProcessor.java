@@ -292,6 +292,8 @@ public class BugDataProcessor {
 		classesInDescriptionWriter.close();	
 	}
 	
+
+	
 	/**
 	 * Extract all the class names in a given bug report
 	 * @param content
@@ -312,6 +314,12 @@ public class BugDataProcessor {
 		}
 		return res.toString();
 	}
+	
+	
+	
+	
+	
+
 	
 	
 	
