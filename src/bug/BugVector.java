@@ -50,7 +50,7 @@ public class BugVector {
 
 		list.addEntry(new WVTDocumentInfo(HOME_FOLDER + BUG_CORPUS_FOLDER,
 				"txt", "", "english", 0));
-
+		
 		WVTWordList wordList = wvt.createWordList(list, config);
 
 		wordList.pruneByFrequency(1, Integer.MAX_VALUE);

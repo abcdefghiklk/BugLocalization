@@ -65,7 +65,7 @@ public class WVToolWrapper {
 	 * @throws IOException
 	 */
 	public static void saveCorpusDic(WVTWordList dictionary, String dstFilePath) throws IOException{
-		dictionary.store(new FileWriter(dstFilePath));
+		dictionary.storePlain(new FileWriter(dstFilePath));
 	}
 	
 	/**
@@ -82,11 +82,12 @@ public class WVToolWrapper {
 		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw));
 		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TFIDF()));
 		wvt.createVectors(list, config, dictionary);
+		wvw.close();
 	}
 	
 	
 	private static void showHelp() {
-		String usage = "Usage:java -jar VectorCreater [-options] \r\n\r\nwhere options must include:\r\n"
+		String usage = "Usage:java -jar vectorCreator [-options] \r\n\r\nwhere options must include:\r\n"
 				+ "-c	indicates the absolute path of the file corpus\r\n"
 				+ "and at least one of the following options:\r\n"
 				+ "-d   indicates the absolute path of the output file storing the corpus dictionary\r\n"
@@ -111,9 +112,9 @@ public class WVToolWrapper {
 			} else if (args[i].equals("-v")) {
 				i++;
 				bugVectorFilePath = args[i];
-			} else if (args[1].equals("-d")) {
+			} else if (args[i].equals("-d")) {
 				i++;
-				
+				corpusDicFilePath =args[i];
 			}
 			i++;
 		}
@@ -131,13 +132,22 @@ public class WVToolWrapper {
 		}
 		else{
 			WVTFileInputList list=extractCorpusFileList(bugCorpusPath);
+			System.out.println();
 			WVTWordList dictionary=extractCorpusDic(list);
+			System.out.println(dictionary.getNumDocuments());
 			saveCorpusDic(dictionary,corpusDicFilePath);
 			generateVectors(bugVectorFilePath,list,dictionary);
 		}
 	}
 
 	public static void main(String []args) throws Exception{
+//		args=new String[6];
+//		args[0]="-c";
+//		args[1]="C:/Users/ql29/Documents/EClipse/BugCorpus/summary";
+//		args[2]="-v";
+//		args[3]="C:/Users/ql29/Documents/EClipse/BugCorpus/bugVector";
+//		args[4]="-d";
+//		args[5]="C:/Users/ql29/Documents/EClipse/BugCorpus/corpusDic";
 		if(args.length==0){
 			showHelp();
 		}
