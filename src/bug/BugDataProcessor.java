@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import property.Property;
+import utils.DateFormat;
 import utils.Splitter;
 import utils.Stem;
 import utils.Stopword;
@@ -262,12 +263,11 @@ public class BugDataProcessor {
 			informationWriter.close();
 			
 			//export bug openDate and fixDate to file
-			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-			openDateWriter.write(_bug.getBugId()+"\t"+format.format(_bug.getOpenDate())+"\n");
+			openDateWriter.write(_bug.getBugId()+"\t"+DateFormat.getFormat().format(_bug.getOpenDate())+"\n");
 			openDateWriter.flush();
 			
 			
-			fixDateWriter.write(_bug.getBugId()+"\t"+format.format(_bug.getFixDate())+"\n");
+			fixDateWriter.write(_bug.getBugId()+"\t"+DateFormat.getFormat().format(_bug.getFixDate())+"\n");
 			fixDateWriter.flush();
 			
 			

@@ -80,6 +80,8 @@ public class BugRecord {
 	}
 
 	public void addFixedFile(String fileName) {
-		this.fixedFileSet.add(fileName);
+		if(!this.fixedFileSet.contains(fileName)){
+			this.fixedFileSet.add(fileName);		
+		}
 	}
 }

@@ -1,15 +1,20 @@
 package bug;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
+import utils.DateFormat;
 import utils.Splitter;
 import utils.Stem;
 import utils.Stopword;
@@ -49,7 +54,7 @@ public class BugFeatureExtractor {
 		HashMap <String, String> idInformationPairs=new HashMap<String, String>();
 		File srcDir=new File(srcDirPath);
 		if(!srcDir.isDirectory()){
-			System.out.println("the Input directory path is wrong!");
+			System.out.println("the Input directory path is invalid!");
 			return idInformationPairs;
 		}
 		
@@ -117,7 +122,7 @@ public class BugFeatureExtractor {
 		HashMap <String, String> idSummaryPairs=new HashMap<String, String>();
 		File srcDir=new File(srcDirPath);
 		if(!srcDir.isDirectory()){
-			System.out.println("the Input directory path is wrong!");
+			System.out.println("the Input directory path is invalid!");
 			return idSummaryPairs;
 		}
 		
@@ -144,20 +149,40 @@ public class BugFeatureExtractor {
 	 * @param bugList
 	 */
 	public static void exportBugSummary(HashMap <String, String> idSummaryPairs, ArrayList<BugRecord> bugList){
-		
+		for (Entry <String, String> pair:idSummaryPairs.entrySet()){
+			boolean isExist=false;
+			for(BugRecord _bug:bugList){
+				if(_bug.getBugId().equals(pair.getKey())){
+					_bug.setBugSummary(pair.getValue());
+					isExist=true;
+					break;
+				}
+			}
+			if(!isExist){
+				BugRecord newBug=new BugRecord();
+				newBug.setBugSummary(pair.getValue());
+				bugList.add(newBug);
+			}
+		}
 	}
 	
 	/**
 	 * Export <bug, summary> pairs to target directory
 	 * @param idSummaryPairs
 	 * @param dstDirPath
+	 * @throws IOException 
 	 */
-	public static void exportBugSummary(HashMap <String, String> idSummaryPairs, String dstDirPath){
-		
+	public static void exportBugSummary(HashMap <String, String> idSummaryPairs, String dstDirPath) throws IOException{
+		File dstDir = new File(dstDirPath);
+		if(!dstDir.isDirectory()){
+			dstDir.mkdir();
+		}
+		for(Entry<String, String> idSumPair : idSummaryPairs.entrySet()){
+			FileWriter writer = new FileWriter(Paths.get(dstDirPath, idSumPair.getKey()).toFile());
+			writer.write(idSumPair.getValue());
+			writer.close();
+		}
 	}
-	
-	
-	
 	
 	
 	/**
@@ -177,9 +202,30 @@ public class BugFeatureExtractor {
 	 * Extract <bug, description> pairs from directory
 	 * @param targetDirPath
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap <String, String> extractBugDescription(String srcDirPath){
+	public static HashMap <String, String> extractBugDescription(String srcDirPath) throws Exception{
 		HashMap <String, String> idDescriptionPairs=new HashMap<String, String>();
+		File srcDir=new File(srcDirPath);
+		if(!srcDir.isDirectory()){
+			System.out.println("the Input directory path is invalid!");
+			return idDescriptionPairs;
+		}
+		
+		for (File file:srcDir.listFiles()){
+			String bugID=file.toString();
+			FileReader reader = new FileReader(file);
+			String information="";
+			int c=reader.read();
+			while(c!=-1){
+				information+=(char)c;
+				c=reader.read();
+			}
+			reader.close();
+			if (!idDescriptionPairs.containsKey(bugID)){
+				idDescriptionPairs.put(bugID, information);
+			}
+		}
 		return idDescriptionPairs;
 	}
 	
@@ -189,19 +235,358 @@ public class BugFeatureExtractor {
 	 * @param bugList
 	 */
 	public static void exportBugDescription(HashMap <String, String> idDescriptionPairs, ArrayList<BugRecord> bugList){
-		
+		for (Entry <String, String> pair:idDescriptionPairs.entrySet()){
+			boolean isExist=false;
+			for(BugRecord _bug:bugList){
+				if(_bug.getBugId().equals(pair.getKey())){
+					_bug.setBugDescription(pair.getValue());
+					isExist=true;
+					break;
+				}
+			}
+			if(!isExist){
+				BugRecord newBug=new BugRecord();
+				newBug.setBugDescription(pair.getValue());
+				bugList.add(newBug);
+			}
+		}
 	}
 	
 	/**
 	 * Export <bug, description> pairs to target directory
 	 * @param idDescriptionPairs
 	 * @param dstDirPath
+	 * @throws Exception 
 	 */
-	public static void exportBugDescription(HashMap <String, String> idDescriptionPairs, String dstDirPath){
-		
+	public static void exportBugDescription(HashMap <String, String> idDescriptionPairs, String dstDirPath) throws Exception{
+		File dstDir = new File(dstDirPath);
+		if(!dstDir.isDirectory()){
+			dstDir.mkdir();
+		}
+		for(Entry<String, String> idDesPair : idDescriptionPairs.entrySet()){
+			FileWriter writer = new FileWriter(Paths.get(dstDirPath, idDesPair.getKey()).toFile());
+			writer.write(idDesPair.getValue());
+			writer.close();
+		}
 	}
-	 
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Extract <bug, OpenDate> pairs from the BugRecord List
+	 * @param bugList
+	 * @return
+	 */
+	public static HashMap<String, Date> extractOpenDate(ArrayList<BugRecord> bugList){
+		HashMap<String, Date> idOpenDatePairs=new HashMap<String, Date>();
+		for(BugRecord _bug:bugList){
+			idOpenDatePairs.put(_bug.getBugId(), _bug.getOpenDate());
+		}
+		return idOpenDatePairs;
+	}
+	
+	/**
+	 * Extract <bug, OpenDate> pairs from file
+	 * @param srcFilePath
+	 * @return
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	public static HashMap<String, Date> extractOpenDate(String srcFilePath) throws IOException, Exception{
+		HashMap<String, Date> idOpenDatePairs=new HashMap<String, Date>();
+		if(!new File(srcFilePath).isFile()){
+			System.out.println("The input file path is invalid!");
+			return idOpenDatePairs;
+		}
+		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
+		String line=new String();
+		while((line=reader.readLine())!=null){
+			String []strs=line.split("\t");
+			if(strs.length==2){
+				String bugID=strs[0];
+				Date openDate=DateFormat.getFormat().parse(strs[1]);
+				idOpenDatePairs.put(bugID, openDate);
+			}
+		}
+		return idOpenDatePairs;
+	}
+	
+	/**
+	 * Export <bug, OpenDate> pairs to Bug Record
+	 * @param idOpenDatePairs
+	 * @param bugList
+	 */
+	public static void exportOpenDate(HashMap<String, Date> idOpenDatePairs, ArrayList<BugRecord> bugList){
+		for(Entry<String, Date> pair: idOpenDatePairs.entrySet()){
+			boolean isExist= false;
+			for(BugRecord _bug : bugList){
+				if(_bug.getBugId().equals(pair.getKey())){
+					_bug.setOpenDate(pair.getValue());
+					isExist=true;
+					break;
+				}
+			}
+			if(!isExist){
+				BugRecord newBug=new BugRecord();
+				newBug.setOpenDate(pair.getValue());
+				bugList.add(newBug);
+			}
+		}
+	}
+	
+	/**
+	 * Export <bug, OpenDate> pairs to file
+	 * @param idOpenDatePairs
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void exportOpenDate(HashMap<String, Date> idOpenDatePairs, String dstFilePath) throws IOException{
+		FileWriter writer=new FileWriter(dstFilePath);
+		StringBuffer buf=new StringBuffer();
+		for(Entry<String, Date> pair:idOpenDatePairs.entrySet()){
+			buf.append(pair.getKey()+"\t"+DateFormat.getFormat().format(pair.getValue())+"\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Extract <bug, FixDate> pairs from the BugRecord List
+	 * @param bugList
+	 * @return
+	 */
+	public static HashMap<String, Date> extractFixDate(ArrayList<BugRecord> bugList){
+		HashMap<String, Date> idFixDatePairs=new HashMap<String, Date>();
+		for(BugRecord _bug:bugList){
+			idFixDatePairs.put(_bug.getBugId(), _bug.getOpenDate());
+		}
+		return idFixDatePairs;
+	}
+	
+	/**
+	 * Extract <bug, FixDate> pairs from file
+	 * @param srcFilePath
+	 * @return
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	public static HashMap<String, Date> extractFixDate(String srcFilePath) throws IOException, Exception{
+		HashMap<String, Date> idFixDatePairs=new HashMap<String, Date>();
+		if(!new File(srcFilePath).isFile()){
+			System.out.println("The input file path is invalid!");
+			return idFixDatePairs;
+		}
+		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
+		String line=new String();
+		while((line=reader.readLine())!=null){
+			String []strs=line.split("\t");
+			if(strs.length==2){
+				String bugID=strs[0];
+				Date fixDate=DateFormat.getFormat().parse(strs[1]);
+				idFixDatePairs.put(bugID, fixDate);
+			}
+		}
+		return idFixDatePairs;
+	}
+	
+	/**
+	 * Export <bug, FixDate> pairs to Bug Record
+	 * @param idFixDatePairs
+	 * @param bugList
+	 */
+	public static void exportFixDate(HashMap<String, Date> idFixDatePairs, ArrayList<BugRecord> bugList){
+		for(Entry<String, Date> pair: idFixDatePairs.entrySet()){
+			boolean isExist= false;
+			for(BugRecord _bug : bugList){
+				if(_bug.getBugId().equals(pair.getKey())){
+					_bug.setFixDate(pair.getValue());
+					isExist=true;
+					break;
+				}
+			}
+			if(!isExist){
+				BugRecord newBug=new BugRecord();
+				newBug.setFixDate(pair.getValue());
+				bugList.add(newBug);
+			}
+		}
+	}
+	
+	/**
+	 * Export <bug, FixDate> pairs to file
+	 * @param idFixDatePairs
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void exportFixDate(HashMap<String, Date> idFixDatePairs, String dstFilePath) throws IOException{
+		FileWriter writer=new FileWriter(dstFilePath);
+		StringBuffer buf=new StringBuffer();
+		for(Entry<String, Date> pair:idFixDatePairs.entrySet()){
+			buf.append(pair.getKey()+"\t"+DateFormat.getFormat().format(pair.getValue())+"\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
+	
+	
+	/**
+	 * Extract <bug, FixedFiles> pairs from BugRecord List
+	 * @param bugList
+	 * @return
+	 */
+	public static HashMap<String, TreeSet<String>> extractFixedFiles(ArrayList<BugRecord> bugList){
+		HashMap<String, TreeSet<String>> idFixedFilesPairs=new HashMap<String, TreeSet<String>>();
+		for(BugRecord _bug:bugList){
+			idFixedFilesPairs.put(_bug.getBugId(), _bug.getFixedFileSet());
+		}
+		return idFixedFilesPairs;
+	}
+	
+	/**
+	 * Extract <bug, FixedFiles> pairs from file
+	 * @param srcFilePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static HashMap<String, TreeSet<String>> extractFixedFiles(String srcFilePath) throws Exception{
+		HashMap<String, TreeSet<String>> idFixedFilesPairs=new HashMap<String, TreeSet<String>>();
+		if(new File(srcFilePath).isFile()){
+			System.out.println("The input file path is invalid!");
+			return idFixedFilesPairs;
+		}
+		BufferedReader reader = new BufferedReader(new FileReader(srcFilePath));
+		String line=new String();
+		while((line= reader.readLine())!=null){
+			String []strs=line.split("\t");
+			if(strs.length>1){
+				String bugID=strs[0];
+				TreeSet<String> fixedSet=new TreeSet<String>();
+				for(int i=1; i<strs.length;i++){
+					fixedSet.add(strs[i]);
+				}
+				idFixedFilesPairs.put(bugID, fixedSet);
+			}
+		}
+		
+		
+		return idFixedFilesPairs;
+	}
+	
+	/**
+	 * Export <bug, FixedFiles> pairs to BugRecord List
+	 * @param idFixedFilesPairs
+	 * @param bugList
+	 */
+	public static void exportFixedFiles(HashMap<String, TreeSet<String>> idFixedFilesPairs, ArrayList<BugRecord> bugList){
+		for(Entry <String, TreeSet<String>> pair: idFixedFilesPairs.entrySet()){
+			boolean isExist=false;
+			for(BugRecord _bug: bugList){
+				if(_bug.getBugId().equals(pair.getKey())){
+					for(String oneFixedFile:pair.getValue()){
+						_bug.addFixedFile(oneFixedFile);
+					}
+				}
+				isExist=true;
+				break;
+			}
+			if(!isExist){
+				BugRecord newBug=new BugRecord();
+				for(String oneFixedFile:pair.getValue()){
+					newBug.addFixedFile(oneFixedFile);
+				}
+				bugList.add(newBug);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Export <bug, FixedFiles> pairs to file
+	 * @param idFixedFilesPairs
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void exportFixedFiles(HashMap<String, TreeSet<String>> idFixedFilesPairs, String dstFilePath) throws IOException{
+		FileWriter writer = new FileWriter(dstFilePath);
+		StringBuffer buf = new StringBuffer();
+		for(Entry <String, TreeSet<String>> pair: idFixedFilesPairs.entrySet()){
+			String onePairStr=pair.getKey();
+			for(String oneFixedFile:pair.getValue()){
+				onePairStr+="\t"+oneFixedFile;
+			}
+			buf.append(onePairStr+"\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Extract <bug, FilesInDescription> pairs from file
+	 * @param srcFilePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static HashMap<String, TreeSet<String>> extractFilesInDescription(String srcFilePath) throws Exception{
+		HashMap<String, TreeSet<String>> idFilesInDescriptionPairs=new HashMap<String, TreeSet<String>>();
+		if(!new File(srcFilePath).isFile()){
+			System.out.println("The input file path is invalid!");
+			return idFilesInDescriptionPairs;
+		}
+		else{
+			BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
+			String line=new String();
+			while((line=reader.readLine())!=null){
+				String []strs=line.split("\t");
+				if(strs.length>1){
+					String bugID=strs[0];
+					TreeSet<String> fixedSet=new TreeSet<String>();
+					for(int i=1; i<strs.length;i++){
+						fixedSet.add(strs[i]);
+					}
+					idFilesInDescriptionPairs.put(bugID, fixedSet);
+				}
+			}
+		}
+		return idFilesInDescriptionPairs;
+	}
+	
+	/**
+	 * Export <bug, FilesInDescription> pairs to file
+	 * @param idFilesInDescriptionPairs
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void exportFilesInDescription(HashMap<String, TreeSet<String>> idFilesInDescriptionPairs, String dstFilePath) throws IOException{
+		FileWriter writer = new FileWriter(dstFilePath);
+		StringBuffer buf = new StringBuffer();
+		for(Entry <String, TreeSet<String>> pair: idFilesInDescriptionPairs.entrySet()){
+			String onePairStr=pair.getKey();
+			for(String oneFixedFile:pair.getValue()){
+				onePairStr+="\t"+oneFixedFile;
+			}
+			buf.append(onePairStr+"\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
+	
+	
+	
+
 	/**
 	 * split and stem a passage
 	 * @param content
