@@ -353,7 +353,7 @@ public class BugDataProcessor {
 			isLegal=false;
 			System.out.println("Error--the input log file is illegal!\n");
 		}
-		if (bugCorpusPath==""){
+		if (bugCorpusPath.equals(new String())){
 			System.out.println("please assign a directory for the bug corpus!");
 			isLegal=false;
 		}

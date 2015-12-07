@@ -1,8 +1,12 @@
 package utils;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import bug.BugDataProcessor;
+import bug.BugRecord;
 import property.Property;
 import edu.udo.cs.wvtool.config.WVTConfigException;
 import edu.udo.cs.wvtool.config.WVTConfiguration;
@@ -71,29 +75,57 @@ public class WVToolWrapper {
 	}
 	
 	
+	private static void showHelp() {
+		String usage = "Usage:java -jar VectorCreater [-options] \r\n\r\nwhere options must include:\r\n"
+				+ "-d	indicates the absolute path of the file corpus\r\n"
+				+ "-o	indicates the absolute path of the output file storing the vector representation for each file.";
+
+		System.out.println(usage);
+	}
 	
-	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub#
-		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/BugCorpus/summary";
-		String bugVectorFilePath="C:/Users/ql29/Documents/EClipse/BugCorpus/bugVector";
-		WVTool wvt = new WVTool(false);
-		WVTConfiguration config = new WVTConfiguration();
-		WVTStemmer stemmer = new PorterStemmerWrapper();
-		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER, new WVTConfigurationFact(stemmer));
-		WVTFileInputList list = new WVTFileInputList(1);
-
-		list.addEntry(new WVTDocumentInfo(bugCorpusDirPath,
-				"txt", "", "english", 0));
-
-		WVTWordList wordList = wvt.createWordList(list, config);
-		for(int i=0;i<wordList.getNumWords();i++){
-			System.out.println(wordList.getWord(i));
+	
+	public static void parseArgs(String []args) throws Exception{
+		int i = 0;
+		String bugCorpusPath=new String();
+		String bugVectorFilePath=new String();
+//		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/BugCorpus/summary";
+//		String bugVectorFilePath="C:/Users/ql29/Documents/EClipse/BugCorpus/bugVector";
+		while (i < args.length-1) {
+			if (args[i].equals("-d")) {
+				i++;
+				bugCorpusPath = args[i];
+			} else if (args[i].equals("-o")) {
+				i++;
+				bugVectorFilePath = args[i];
+			}
+			i++;
 		}
-		WordVectorWriter wvw= new WordVectorWriter(new FileWriter(bugVectorFilePath),true);
-		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw));
-		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TFIDF()));
-		wvt.createVectors(list, config, wordList);
-		wvw.close();
+		boolean isLegal=true;
+		if (!new File(bugCorpusPath).isDirectory()){
+			System.out.println("The input directory is invalid!");
+			isLegal=false;
+		}
+		if (bugVectorFilePath.equals(new String())){
+			System.out.println("Please assign an output file path!");
+			isLegal=false;
+		}
+		if(!isLegal){
+			showHelp();
+		}
+		else{
+			WVTFileInputList list=extractCorpusFileList(bugCorpusPath);
+			WVTWordList dictionary=extractCorpusDic(list);
+			generateVectors(bugVectorFilePath,list,dictionary);
+		}
 	}
 
+	public static void main(String []args) throws Exception{
+		if(args.length==0){
+			showHelp();
+		}
+		else{
+			parseArgs(args);
+		}
+	}
 }
+

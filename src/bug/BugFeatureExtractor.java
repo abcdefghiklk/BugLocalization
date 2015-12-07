@@ -39,7 +39,7 @@ public class BugFeatureExtractor {
 	public static HashMap <String, String> extractBugInformation(ArrayList<BugRecord> bugList){
 		HashMap <String, String> idInformationPairs=new HashMap<String, String>();
 		for (BugRecord _bug:bugList){
-			idInformationPairs.put(_bug.getBugId(), splitAndStem(_bug.getBugSummary()+" "+_bug.getBugDescription()));
+			idInformationPairs.put(_bug.getBugId(), splitAndFilter(_bug.getBugSummary()+" "+_bug.getBugDescription()));
 		}
 		return idInformationPairs;
 	}
@@ -107,7 +107,7 @@ public class BugFeatureExtractor {
 	public static HashMap <String, String> extractBugSummary(ArrayList<BugRecord> bugList){
 		HashMap <String, String> idSummaryPairs=new HashMap<String, String>();
 		for (BugRecord _bug:bugList){
-			idSummaryPairs.put(_bug.getBugId(), splitAndStem(_bug.getBugSummary()));
+			idSummaryPairs.put(_bug.getBugId(), splitAndFilter(_bug.getBugSummary()));
 		}
 		return idSummaryPairs;
 	}
@@ -193,7 +193,7 @@ public class BugFeatureExtractor {
 	public static HashMap <String, String> extractBugDescription(ArrayList<BugRecord> bugList){
 		HashMap <String, String> idDescriptionPairs=new HashMap<String, String>();
 		for (BugRecord _bug:bugList){
-			idDescriptionPairs.put(_bug.getBugId(), splitAndStem(_bug.getBugDescription()));
+			idDescriptionPairs.put(_bug.getBugId(), splitAndFilter(_bug.getBugDescription()));
 		}
 		return idDescriptionPairs;
 	}
@@ -585,22 +585,17 @@ public class BugFeatureExtractor {
 	}
 	
 	
-	
-	
-	
-	
-	
 
 	/**
-	 * split and stem a passage
+	 * split and then filter the ones that are stopwords
 	 * @param content
 	 * @return
 	 */
-	public static String splitAndStem(String content){
+	public static String splitAndFilter(String content){
 		String [] terms=Splitter.splitNatureLanguage(content);
 		StringBuffer buf=new StringBuffer();
 		for (String oneTerm : terms) {
-			oneTerm = Stem.stem(oneTerm.toLowerCase());
+			oneTerm = oneTerm.toLowerCase();
 			if (!Stopword.isEnglishStopword(oneTerm)) {
 				buf.append(oneTerm + " ");
 			}
