@@ -586,6 +586,10 @@ public class BugFeatureExtractor {
 	
 	
 	
+	
+	
+	
+	
 
 	/**
 	 * split and stem a passage

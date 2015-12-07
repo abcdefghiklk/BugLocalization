@@ -234,7 +234,7 @@ public class BugDataProcessor {
 			
 			//create bug summary corpus and part of information corpus
 			for (String word : bugSummaryWords) {
-				word = Stem.stem(word.toLowerCase());
+				word = word.toLowerCase();
 				if (!Stopword.isEnglishStopword(word)) {
 					summaryBuffer.append(word + " ");
 					informationBuffer.append(word + " ");
@@ -243,7 +243,7 @@ public class BugDataProcessor {
 			
 			//create bug description corpus and part of information corpus
 			for (String word : bugDescriptionWords) {
-				word = Stem.stem(word.toLowerCase());
+				word = word.toLowerCase();
 				if (!Stopword.isEnglishStopword(word)) {
 					descriptionBuffer.append(word + " ");
 					informationBuffer.append(word + " ");
