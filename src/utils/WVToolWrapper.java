@@ -59,6 +59,16 @@ public class WVToolWrapper {
 	}
 	
 	/**
+	 * Save the corpus dictionary to the given file
+	 * @param dictionary
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void saveCorpusDic(WVTWordList dictionary, String dstFilePath) throws IOException{
+		dictionary.store(new FileWriter(dstFilePath));
+	}
+	
+	/**
 	 * Generate a vector for each file given the dictionary
 	 * @param dstFilePath
 	 * @param list
@@ -77,8 +87,10 @@ public class WVToolWrapper {
 	
 	private static void showHelp() {
 		String usage = "Usage:java -jar VectorCreater [-options] \r\n\r\nwhere options must include:\r\n"
-				+ "-d	indicates the absolute path of the file corpus\r\n"
-				+ "-o	indicates the absolute path of the output file storing the vector representation for each file.";
+				+ "-c	indicates the absolute path of the file corpus\r\n"
+				+ "and at least one of the following options:\r\n"
+				+ "-d   indicates the absolute path of the output file storing the corpus dictionary\r\n"
+				+ "-v   indicates the absolute path of the output file storing the vector representation for each file.";
 
 		System.out.println(usage);
 	}
@@ -88,15 +100,20 @@ public class WVToolWrapper {
 		int i = 0;
 		String bugCorpusPath=new String();
 		String bugVectorFilePath=new String();
+		String corpusDicFilePath=new String();
 //		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/BugCorpus/summary";
 //		String bugVectorFilePath="C:/Users/ql29/Documents/EClipse/BugCorpus/bugVector";
+//		String bugVectorFilePath="C:/Users/ql29/Documents/EClipse/BugCorpus/corpusDic";
 		while (i < args.length-1) {
-			if (args[i].equals("-d")) {
+			if (args[i].equals("-c")) {
 				i++;
 				bugCorpusPath = args[i];
-			} else if (args[i].equals("-o")) {
+			} else if (args[i].equals("-v")) {
 				i++;
 				bugVectorFilePath = args[i];
+			} else if (args[1].equals("-d")) {
+				i++;
+				
 			}
 			i++;
 		}
@@ -105,8 +122,8 @@ public class WVToolWrapper {
 			System.out.println("The input directory is invalid!");
 			isLegal=false;
 		}
-		if (bugVectorFilePath.equals(new String())){
-			System.out.println("Please assign an output file path!");
+		if (bugVectorFilePath.equals(new String()) && corpusDicFilePath.equals(new String())){
+			System.out.println("Please indicate the path of the file for the vectors or the one for the dictionary!");
 			isLegal=false;
 		}
 		if(!isLegal){
@@ -115,6 +132,7 @@ public class WVToolWrapper {
 		else{
 			WVTFileInputList list=extractCorpusFileList(bugCorpusPath);
 			WVTWordList dictionary=extractCorpusDic(list);
+			saveCorpusDic(dictionary,corpusDicFilePath);
 			generateVectors(bugVectorFilePath,list,dictionary);
 		}
 	}
