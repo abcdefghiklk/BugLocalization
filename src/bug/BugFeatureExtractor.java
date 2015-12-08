@@ -2,12 +2,10 @@ package bug;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,14 +14,13 @@ import java.util.TreeSet;
 
 import utils.DateFormat;
 import utils.Splitter;
-import utils.Stem;
 import utils.Stopword;
 
 /**
  * 
  * @author Qiuchi Li
  * Extract features from the bug report
- * All bug features are stored as a hashmap object <bugID, Feature>
+ * All bug features are stored as a HashMap object <bugID, Feature>
  * Provide features <---> BugRecord class interfaces
  * and features <---> bugCorpus interfaces
  */
@@ -312,6 +309,7 @@ public class BugFeatureExtractor {
 				idOpenDatePairs.put(bugID, openDate);
 			}
 		}
+		reader.close();
 		return idOpenDatePairs;
 	}
 	
@@ -396,6 +394,7 @@ public class BugFeatureExtractor {
 				idFixDatePairs.put(bugID, fixDate);
 			}
 		}
+		reader.close();
 		return idFixDatePairs;
 	}
 	
@@ -477,8 +476,7 @@ public class BugFeatureExtractor {
 				idFixedFilesPairs.put(bugID, fixedSet);
 			}
 		}
-		
-		
+		reader.close();
 		return idFixedFilesPairs;
 	}
 	
@@ -546,21 +544,20 @@ public class BugFeatureExtractor {
 			System.out.println("The input file path is invalid!");
 			return idFilesInDescriptionPairs;
 		}
-		else{
-			BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
-			String line=new String();
-			while((line=reader.readLine())!=null){
-				String []strs=line.split("\t");
-				if(strs.length>1){
-					String bugID=strs[0];
-					TreeSet<String> fixedSet=new TreeSet<String>();
-					for(int i=1; i<strs.length;i++){
-						fixedSet.add(strs[i]);
-					}
-					idFilesInDescriptionPairs.put(bugID, fixedSet);
+		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
+		String line=new String();
+		while((line=reader.readLine())!=null){
+			String []strs=line.split("\t");
+			if(strs.length>1){
+				String bugID=strs[0];
+				TreeSet<String> fixedSet=new TreeSet<String>();
+				for(int i=1; i<strs.length;i++){
+					fixedSet.add(strs[i]);
 				}
+				idFilesInDescriptionPairs.put(bugID, fixedSet);
 			}
 		}
+		reader.close();
 		return idFilesInDescriptionPairs;
 	}
 	

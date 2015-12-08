@@ -84,7 +84,8 @@ public class BugSimilarity {
 			float[] vector = this.getVector(vectorStr);
 			vectors.put(id, vector);
 		}
-		return vectors;
+		reader.close();
+				return vectors;
 	}
 
 	private float[] getVector(String vectorStr) {

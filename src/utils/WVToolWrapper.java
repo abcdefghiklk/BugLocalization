@@ -3,24 +3,15 @@ package utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import bug.BugDataProcessor;
-import bug.BugRecord;
-import property.Property;
-import edu.udo.cs.wvtool.config.WVTConfigException;
 import edu.udo.cs.wvtool.config.WVTConfiguration;
 import edu.udo.cs.wvtool.config.WVTConfigurationFact;
-import edu.udo.cs.wvtool.config.WVTConfigurationRule;
 import edu.udo.cs.wvtool.generic.output.WordVectorWriter;
-import edu.udo.cs.wvtool.generic.stemmer.LovinsStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.PorterStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.WVTStemmer;
 import edu.udo.cs.wvtool.generic.vectorcreation.TFIDF;
 import edu.udo.cs.wvtool.main.WVTDocumentInfo;
 import edu.udo.cs.wvtool.main.WVTFileInputList;
 import edu.udo.cs.wvtool.main.WVTool;
-import edu.udo.cs.wvtool.util.WVToolException;
 import edu.udo.cs.wvtool.wordlist.WVTWordList;
 
 /**
@@ -85,7 +76,6 @@ public class WVToolWrapper {
 		wvw.close();
 	}
 	
-	
 	private static void showHelp() {
 		String usage = "Usage:java -jar vectorCreator [-options] \r\n\r\nwhere options must include:\r\n"
 				+ "-c	indicates the absolute path of the file corpus\r\n"
@@ -132,9 +122,8 @@ public class WVToolWrapper {
 		}
 		else{
 			WVTFileInputList list=extractCorpusFileList(bugCorpusPath);
-			System.out.println();
 			WVTWordList dictionary=extractCorpusDic(list);
-			System.out.println(dictionary.getNumDocuments());
+//			System.out.println(dictionary.getNumDocuments());
 			saveCorpusDic(dictionary,corpusDicFilePath);
 			generateVectors(bugVectorFilePath,list,dictionary);
 		}
