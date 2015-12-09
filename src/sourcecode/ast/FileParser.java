@@ -2,30 +2,16 @@ package sourcecode.ast;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.FieldAccess;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import utils.Splitter;
 
@@ -34,21 +20,36 @@ public class FileParser {
 	private CompilationUnit cu = null;
 
 	/**
-	 * ���ָ����java�ļ���ʼ��CompilationUnit
-	 * 
-	 * @param file:java �ļ�
-	 *            
+	 * Initialize a file parser given the target file
+	 * @param file
 	 */
 	public FileParser(File file) {
 		ASTCreator creator = new ASTCreator();
 		creator.getFileContent(file);
 		cu = creator.getCompilationUnit();
 	}
+	
+	/**
+	 * Initialize a file parser given the target file path
+	 * @param filePath
+	 * @throws Exception
+	 */
+	public FileParser(String filePath) throws Exception{
+		StringBuffer buf=new StringBuffer();
+		BufferedReader reader=new BufferedReader(new FileReader(filePath));
+		String line=new String();
+		while((line=reader.readLine())!=null){
+			buf.append(line+"\r\n");
+		}
+		reader.close();
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setSource(buf.toString().toCharArray());
+		cu = (CompilationUnit) parser.createAST(null);
+	}
 
 	/**
-	 * ��ȡjava�ļ��Ĵ�������
-	 * 
-	 * @return ��������
+	 * Get the lines of code of a source code file
+	 * @return
 	 */
 	public int getLinesOfCode() {
 		this.deleteNoNeededNode();
@@ -64,9 +65,8 @@ public class FileParser {
 	}
 
 	/**
-	 * ��ȡ����ı��ĵ���
-	 * 
-	 * @return ����ı��ĵ�������
+	 * Get the content of a source code file 
+	 * @return
 	 */
 	public String[] getContent() {
 		String[] tokensInSourceCode = Splitter.splitSourceCode(this
@@ -78,7 +78,11 @@ public class FileParser {
 		String content = sourceCodeContentBuffer.toString().toLowerCase();
 		return content.split(" ");
 	}
-
+	
+	/**
+	 * Get the class and method names of a source code file
+	 * @return
+	 */
 	public String[] getClassNameAndMethodName() {
 		String content = (this.getAllClassName() + " " + this
 				.getAllMethodName()).toLowerCase();
@@ -86,9 +90,8 @@ public class FileParser {
 	}
 
 	/**
-	 * ��ȡ�ļ����ڰ���
-	 * 
-	 * @return ����
+	 * Get the package name of a source code file
+	 * @return
 	 */
 	public String getPackageName() {
 
@@ -97,11 +100,10 @@ public class FileParser {
 	}
 
 	/**
-	 * ��ȡ�ļ��е����з�����
-	 * 
-	 * @return ��������ɵ��ַ�
+	 * Get all method names of a source code file
+	 * @return
 	 */
-	private String getAllMethodName() {
+	public String getAllMethodName() {
 		ArrayList<String> methodNameList = new ArrayList<String>();
 		for (int i = 0; i < cu.types().size(); i++) {
 			TypeDeclaration type = (TypeDeclaration) cu.types().get(i);
@@ -121,11 +123,10 @@ public class FileParser {
 	}
 
 	/**
-	 * ��ȡ�ļ��е���������
-	 * 
-	 * @return ������ɵ��ַ�
+	 * Get all class names of a source code file
+	 * @return
 	 */
-	private String getAllClassName() {
+	public String getAllClassName() {
 		ArrayList<String> classNameList = new ArrayList<String>();
 		for (int i = 0; i < cu.types().size(); i++) {
 			TypeDeclaration type = (TypeDeclaration) cu.types().get(i);
@@ -140,9 +141,11 @@ public class FileParser {
 	}
 
 	/**
-	 * ɾ���ļ��в���Ҫ����Ϣ
-	 * 
-	 * @return �ļ����ַ��ʾ
+	 * Delete all useless nodes, including
+	 * I) package member type declaration nodes
+	 * II) package declaration nodes
+	 * III) import declaration nodes
+	 ** @return
 	 */
 	private String deleteNoNeededNode() {
 		cu.accept(new ASTVisitor() {
@@ -168,7 +171,11 @@ public class FileParser {
 		});
 		return cu.toString();
 	}
-
+	
+	/**
+	 * Export all import information into a file for a given source code file
+	 * @param writeImport
+	 */
 	public void getImport(final FileWriter writeImport){
 		cu.accept(new ASTVisitor() {
 			@Override
