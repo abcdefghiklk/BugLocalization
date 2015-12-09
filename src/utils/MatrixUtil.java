@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import Jama.Matrix;
@@ -54,9 +55,9 @@ public class MatrixUtil {
 	 * @param dicSize
 	 * @return
 	 */
-	public static Matrix computeSimilarityMatrix(HashMap<String, Matrix> idFilePairs, int dicSize){
+	public static Matrix computeSimilarityMatrix(HashMap<String, Matrix> idMatPairs, int dicSize){
 		Matrix simMat=new Matrix(dicSize, dicSize);
-		Matrix []matList=idFilePairs.values().toArray(new Matrix[0]);
+		Matrix []matList=idMatPairs.values().toArray(new Matrix[0]);
 		for (int i=0; i<matList.length; i++){
 			for (int j=0; j<matList.length; j++){
 				simMat.set(i, j, computeCosSimilarity(matList[i], matList[j]));
@@ -100,17 +101,17 @@ public class MatrixUtil {
 	 * Export the similarity Matrix to file
 	 * @param idFilePairs
 	 * @param dstFilePath
-	 * @param dicSize
+	 * @param dicSize(can be any larger than the vector length)
 	 * @throws IOException
 	 */
-	public static void exportSimilarityMatrix(HashMap<String, Matrix> idFilePairs, String dstFilePath, int dicSize) throws IOException{
+	public static void exportSimilarityMatrix(HashMap<String, Matrix> idMatPairs, String dstFilePath, int dicSize) throws IOException{
 		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
-		for(String id: idFilePairs.keySet()){
+		for(String id: idMatPairs.keySet()){
 			buf.append(id+"\t");
 		}
 		buf.append("\n");
-		Matrix simMat=computeSimilarityMatrix(idFilePairs,dicSize);
+		Matrix simMat=computeSimilarityMatrix(idMatPairs,dicSize);
 		for(int i=0;i<simMat.getRowDimension();i++){
 			for(int j=0;j<simMat.getColumnDimension();j++){
 				buf.append(String.valueOf(simMat.get(i, j))+"\t");
@@ -121,8 +122,46 @@ public class MatrixUtil {
 		writer.close();
 	}
 	
+	/**
+	 * Import the similarity matrix from file,
+	 * The information is saved in simMat and idList
+	 * @param simMat
+	 * @param idList
+	 * @param srcFilePath
+	 * @throws Exception
+	 */
+	public static void importSimilarityMatrix(Matrix simMat, ArrayList<String> idList, String srcFilePath) throws Exception{
+		if(!new File(srcFilePath).isFile()){
+			System.out.println("The input file path is invalid");
+			return ;
+		}
+		
+		//The file format:
+		//id1\tid2\t...\tidk
+		//entry(1,1)\tentry(1,2)\t...entry(1,k)
+		//...
+		//entry(k,1)\tentry(k,2)\t...entry(k,k)
+		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
+		String line=reader.readLine();
+		String []ids=line.split("\t");
+		idList.clear();
+		for(String id:ids){
+			idList.add(id);
+		}
+//		simMat=new Matrix(idList.length,idList.length);
+		int i=0;
+		while((line=reader.readLine())!=null){
+			String []strs=line.split("\t");
+			for(int j=0; j<strs.length;j++){
+				simMat.set(i, j, Double.parseDouble(strs[j]));
+			}
+		}
+		reader.close();
+		return;
+	}
 	
-	public static void main(String[] args) throws IOException {
+	
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		double [][]vec1={{0.1,0.2,0.3}};
 		double [][]vec2={{0.3,0.5,0.6}};
@@ -131,14 +170,21 @@ public class MatrixUtil {
 		Matrix mat2=new Matrix(vec2);
 		Matrix mat3=new Matrix(vec3);
 		String id1="a";
-		String id2="b";
-		String id3="c";
+		String id2="b";		String id3="c";
 		HashMap<String, Matrix> idMatPairs=new HashMap<String,Matrix>();
 		idMatPairs.put(id1, mat1);
 		idMatPairs.put(id2, mat2);
 		idMatPairs.put(id3, mat3);
 		String pathFile="C:/Users/ql29/Documents/EClipse/BugCorpus/similarityMat";
 		exportSimilarityMatrix(idMatPairs,pathFile,3);
+		Matrix simMat=new Matrix(3,3);
+		ArrayList<String> idList=new ArrayList<String>();
+		importSimilarityMatrix(simMat,idList,pathFile);
+		for(String id:idList){
+			System.out.println(id);
+		}
+		System.out.println(simMat.get(0, 0));
+		
 	}
 
 }
