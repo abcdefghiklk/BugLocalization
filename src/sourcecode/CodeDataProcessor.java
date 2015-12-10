@@ -2,15 +2,11 @@ package sourcecode;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
-import com.sun.org.apache.bcel.internal.classfile.Code;
-
 import sourcecode.ast.FileParser;
 
 /**
@@ -51,10 +47,10 @@ public class CodeDataProcessor {
 			}
 			else{
 				//full class name = package name + file name
-				fullClassName += "." + new File(oneFilePath).getName();
+				fullClassName = packageName+ "." + new File(oneFilePath).getName();
 			}
 			//Modification for the aspectJ project because of its file structure???
-			oneCodeFile.setFilePath(fullClassName);
+			oneCodeFile.setFullClassName(fullClassName);
 			
 			//set the file content
 			String []terms= parser.getContent();
@@ -154,7 +150,7 @@ public class CodeDataProcessor {
 			//For each source code file, the name in the code segments corpus is the full class name+@+"the segment index".java 
 			String []codeSegmentArray= oneCodeFile.getCodeSegmentList().toArray(new String[0]);
 			for(int i=0;i<codeSegmentArray.length;i++){
-				fileName= Paths.get(codeContentDirPath, oneCodeFile.getFullClassName()+"@"+i+".java").toString();
+				fileName= Paths.get(codeSegmentDirPath, oneCodeFile.getFullClassName()+"@"+i+".java").toString();
 				writer=new FileWriter(fileName);
 				writer.write(codeSegmentArray[i]);
 				writer.close();
@@ -184,6 +180,7 @@ public class CodeDataProcessor {
 
 
 	}
+	
 	/**
 	 * Import the source code corpus from the given directory
 	 * @param srcDirPath
@@ -239,10 +236,12 @@ public class CodeDataProcessor {
 						if(sourceCode.getFullClassName().equals(fullClassName.trim())){
 							sourceCode.setContent(codeContent);
 							isExist=true;
+							break;
 						}
 					}
 					if(!isExist){
 						SourceCode newSourceCode=new SourceCode();
+						newSourceCode.setFullClassName(fullClassName);
 						newSourceCode.setContent(codeContent);
 						corpus.addSourceCode(newSourceCode);
 					}
@@ -278,11 +277,13 @@ public class CodeDataProcessor {
 								sourceCode.addCodeSegment(codeSegment);
 							}
 							isExist=true;
+							break;
 						}
 					}
 					if(!isExist){
 						SourceCode newSourceCode=new SourceCode();
-						newSourceCode.addCodeSegment(codeSegment);;
+						newSourceCode.setFullClassName(fullClassName);
+						newSourceCode.addCodeSegment(codeSegment);
 						corpus.addSourceCode(newSourceCode);
 					}
 					reader.close();
@@ -304,22 +305,30 @@ public class CodeDataProcessor {
 					String classNamesString=reader.readLine();
 							
 					//If exists the full class name, add the class names to the list;
-					//else create a new SourceCode object and set the code consent
+					//else create a new SourceCode object and add all the class names to the list
 					boolean isExist=false;
 					for(SourceCode sourceCode: corpus.getSourceCodeList()){
 						if(sourceCode.getFullClassName().equals(fullClassName.trim())){
+							if(classNamesString==null){
+								isExist=true;
+								break;
+							}
 							for(String oneClassName: classNamesString.split(" ")){
 								if(!sourceCode.getClassNameList().contains(oneClassName.trim())){
 									sourceCode.addClassName(oneClassName.trim());
 								}
 							}
 							isExist=true;
+							break;
 						}
 					}
 					if(!isExist){
 						SourceCode newSourceCode=new SourceCode();
-						for(String oneClassName: classNamesString.split(" ")){
-							newSourceCode.addClassName(oneClassName.trim());
+						newSourceCode.setFullClassName(fullClassName);
+						if(classNamesString!=null){
+							for(String oneClassName: classNamesString.split(" ")){
+								newSourceCode.addClassName(oneClassName.trim());
+							}
 						}
 						corpus.addSourceCode(newSourceCode);
 					}
@@ -339,25 +348,31 @@ public class CodeDataProcessor {
 				if(oneFile.isFile()){
 					String fullClassName=oneFile.getName();
 					BufferedReader reader=new BufferedReader(new FileReader(oneFile));
-					String methodNamesString=reader.readLine();
-									
+					String methodNamesString=reader.readLine();	
 					//If exists the full class name, add the class names to the list;
-					//else create a new SourceCode object and set the code consent
+					//else create a new SourceCode object and add all the method names to the list
 					boolean isExist=false;
 					for(SourceCode sourceCode: corpus.getSourceCodeList()){
 						if(sourceCode.getFullClassName().equals(fullClassName.trim())){
-							for(String oneMethodName: methodNamesString.split(" ")){
-								if(sourceCode.getMethodNameList().contains(oneMethodName.trim()))
-								sourceCode.addClassName(oneMethodName.trim());
+							if(methodNamesString==null){
+								isExist=true;
+								break;
 							}
-
+							for(String oneMethodName: methodNamesString.split(" ")){
+								if(!sourceCode.getMethodNameList().contains(oneMethodName.trim()))
+								sourceCode.addMethodName(oneMethodName.trim());
+							}
 							isExist=true;
+							break;
 						}
 					}
 					if(!isExist){
 						SourceCode newSourceCode=new SourceCode();
-						for(String oneMethodName: methodNamesString.split(" ")){
-							newSourceCode.addClassName(oneMethodName.trim());
+						newSourceCode.setFullClassName(fullClassName);
+						if(methodNamesString!=null){
+							for(String oneMethodName: methodNamesString.split(" ")){
+								newSourceCode.addMethodName(oneMethodName.trim());
+							}
 						}
 						corpus.addSourceCode(newSourceCode);
 					}
@@ -367,15 +382,6 @@ public class CodeDataProcessor {
 		}		
 		return corpus;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * Detect all files with the given type in the given directory 
@@ -397,16 +403,97 @@ public class CodeDataProcessor {
 		}
 	}
 	
-	public static void main(String[] args) throws Exception {
+	
+	
+	
+	private static void showHelp() {
+		String usage = "Usage:java -jar BugCorpusCreater [-options] \r\n\r\nwhere options must include:\r\n"
+				+ "-i	indicates the absolute path of the source code directory\r\n"
+				+ "-o	indicates the absolute path of the directory containing the source code corpus\r\n"
+				+ "user can choose to set the following parameters:\r\n"
+				+ "-t 	indicates the type of source code file you are concerned about, default= java\r\n"
+				+ "-l 	indicates the segmentation length for each source code file, default=800\r\n";
+
+		System.out.println(usage);
+	}
+	
+	
+	public static void parseArgs(String []args) throws Exception{
+		int i = 0;
+		String srcDirPath=new String();
+//		String srcDirPath="C:/Users/ql29/Documents/EClipse/Dataset/swt-3.1";
+		String dstDirPath=new String();
+//		String dstDirPath="C:/Users/ql29/Documents/EClipse/sourceCodeCorpus_new";
+		String fileType="java";
+		int segmentationLength=800;
+		while (i < args.length - 1) {
+			if (args[i].equals("-i")) {
+				i++;
+				srcDirPath = args[i];
+			} else if (args[i].equals("-o")) {
+				i++;
+				dstDirPath = args[i];
+			} else if (args[i].equals("-t")) {
+				i++;
+				if(args[i]!=null){
+					fileType=args[i+1];
+				}
+			} else if (args[i].equals("-l")){
+				i++;
+				if(args[i]!=null){
+					segmentationLength=Integer.parseInt(args[i]);
+				}
+			}
+			i++;
+		}
+		boolean isLegal=true;
+		if (!new File(srcDirPath).isDirectory() ){
+			isLegal=false;
+			System.out.println("Error--the input directory is illegal!\n");
+		}
+		if (dstDirPath.equals(new String())){
+			System.out.println("please assign a directory for the source code corpus!");
+			isLegal=false;
+		}
+		if(!isLegal){
+			showHelp();
+		}
+		else{
+			SourceCodeCorpus corpus=extractCodeData(srcDirPath,fileType,segmentationLength);
+			System.out.println("corpus extraction successful!");
+			exportCodeData(dstDirPath,corpus);
+			System.out.println("corpus successfully exported!");
+		}
+	}
+	
+	public static void main(String []args) throws Exception{
+		if(args.length==0){
+			showHelp();
+		}
+		else{
+			parseArgs(args);
+		}
+//	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		String srcDirPath="C:/Users/ql29/Documents/EClipse/Dataset/eclipse-3.1";
-		ArrayList<String> javaFileList=new ArrayList<String>();
-		detectAllFiles(srcDirPath,"java",javaFileList);
-		String []files= javaFileList.toArray(new String[0]);
-		FileParser parser=new FileParser(files[0]);
-		String packageName= parser.getPackageName();
-		System.out.println(packageName);
-		System.out.println(files[0]);
+//		String srcDirPath="C:/Users/ql29/Documents/EClipse/Dataset/swt-3.1";
+//		SourceCodeCorpus corpus=extractCodeData(srcDirPath,"java",800);
+//		for(SourceCode oneFile:corpus.getSourceCodeList()){
+//			System.out.println(oneFile.getFilePath());
+//		}
+//		String srcDirPath="C:/Users/ql29/Documents/EClipse/sourceCodeCorpus";
+//		SourceCodeCorpus corpus=importCodeData(srcDirPath);
+//		for(SourceCode oneFile:corpus.getSourceCodeList()){
+//			System.out.println(oneFile.getFullClassName());
+//		}
+//		String dstDirPath="C:/Users/ql29/Documents/EClipse/sourceCodeCorpus_new";
+//		exportCodeData(dstDirPath,corpus);
+//		ArrayList<String> javaFileList=new ArrayList<String>();
+//		detectAllFiles(srcDirPath,"java",javaFileList);
+//		String []files= javaFileList.toArray(new String[0]);
+//		FileParser parser=new FileParser(files[0]);
+//		String packageName= parser.getPackageName();
+//		System.out.println(packageName);
+//		System.out.println(files[0]);
 //		FileDetector detector=new FileDetector("java");
 //		System.out.println(detector.detect(srcDirPath).length);
 	}

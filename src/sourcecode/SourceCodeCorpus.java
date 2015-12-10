@@ -143,7 +143,7 @@ public class SourceCodeCorpus {
 			}
 			for(int segmentCount=0; segmentCount*this._segmentationLength<fileTerms.length; segmentCount++){
 				int startIndex=segmentCount*this._segmentationLength;
-				int endIndex=Math.min(segmentCount* _segmentationLength, fileTerms.length);
+				int endIndex=Math.min((segmentCount+1)* _segmentationLength, fileTerms.length);
 				String segmentString=new String();
 				for(int i=startIndex; i<endIndex;i++){
 					segmentString+=fileTerms[i]+" ";
