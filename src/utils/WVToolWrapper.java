@@ -22,14 +22,16 @@ import edu.udo.cs.wvtool.wordlist.WVTWordList;
 public class WVToolWrapper {
 	
 	/**
-	 * Extract the file list from the corpus
+	 * Extract the file list from an array of corpus
 	 * @param corpusDirPath
 	 * @return
 	 */
-	public static WVTFileInputList extractCorpusFileList(String corpusDirPath){
+	public static WVTFileInputList extractCorpusFileList(String []corpusDirPathArray){
 		WVTFileInputList list = new WVTFileInputList(1);
-		list.addEntry(new WVTDocumentInfo(corpusDirPath,
-				"txt", "", "english", 0));
+		for(String corpusDirPath:corpusDirPathArray){ 
+			list.addEntry(new WVTDocumentInfo(corpusDirPath,
+					"txt", "", "english", 0));
+		}
 		return list;
 	}
 	
@@ -121,7 +123,8 @@ public class WVToolWrapper {
 			showHelp();
 		}
 		else{
-			WVTFileInputList list=extractCorpusFileList(bugCorpusPath);
+			String []bugCorpusPathArray={bugCorpusPath};
+			WVTFileInputList list=extractCorpusFileList(bugCorpusPathArray);
 			WVTWordList dictionary=extractCorpusDic(list);
 //			System.out.println(dictionary.getNumDocuments());
 			saveCorpusDic(dictionary,corpusDicFilePath);
