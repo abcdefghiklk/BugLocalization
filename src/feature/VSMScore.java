@@ -20,30 +20,39 @@ import bug.BugFeatureExtractor;
 
 public class VSMScore {
 	/**
-	 * Merge the bug dictionary and the code dictionary
-	 * @param bugDicFilePath
-	 * @param codeDicFilePath
-	 * @param mergedDicFilePath
+	 * Generate the similarity matrix and save it to file
+	 * @param bugCorpusDirPath (Input)
+	 * @param codeCorpusDirPath (Input)
+	 * @param bugVecFilePath (Intermediate file)
+	 * @param codeVecFilePath (Intermediate file)
+	 * @param simMatFilePath (Output)
 	 * @throws Exception
 	 */
 	public static void generate(String bugCorpusDirPath, String codeCorpusDirPath, String bugVecFilePath, String codeVecFilePath, String simMatFilePath) throws Exception{
-		WVTFileInputList list=new WVTFileInputList(1);
-		list.addEntry(new WVTDocumentInfo(bugCorpusDirPath,"txt", "", "english", 0));
-		list.addEntry(new WVTDocumentInfo(codeCorpusDirPath,"txt", "", "english", 0));
-		WVTWordList dic=WVToolWrapper.extractCorpusDic(list);
-		WVTFileInputList bugList=new WVTFileInputList(1);
-		bugList.addEntry(new WVTDocumentInfo(bugCorpusDirPath,"txt", "","english",0));
-		WVTFileInputList codeList=new WVTFileInputList(1);
-		codeList.addEntry(new WVTDocumentInfo(codeCorpusDirPath,"txt", "","english",0));
+		
+		//Extract dictionaries for bug and code corpus
+		String []bugAndCodeDirPaths={bugCorpusDirPath,codeCorpusDirPath};
+		WVTFileInputList bugAndCodeList=WVToolWrapper.extractCorpusFileList(bugAndCodeDirPaths);
+		WVTWordList dic=WVToolWrapper.extractCorpusDic(bugAndCodeList);
+		
+		//Extract the bug list and code list
+		WVTFileInputList bugList=WVToolWrapper.extractCorpusFileList(bugCorpusDirPath);
+		WVTFileInputList codeList=WVToolWrapper.extractCorpusFileList(codeCorpusDirPath);
+		
+		//Generate Vectors and save them to files
 		WVToolWrapper.generateVectors(bugVecFilePath, bugList, dic);
 		WVToolWrapper.generateVectors(codeVecFilePath, codeList, dic);
+		
+		//Load the vectors for bug and code vectors, under the same dictionary
 		HashMap<String, Matrix> bugVecList=MatrixUtil.loadVectors(bugVecFilePath, dic.getNumWords());
 		HashMap<String, Matrix> codeVecList=MatrixUtil.loadVectors(codeVecFilePath, dic.getNumWords());
+		
+		//Calculate and save the similarity between each code and each bug in the file
 		MatrixUtil.exportSimilarityMatrix(bugVecList, codeVecList, simMatFilePath, dic.getNumWords());
 		
-//		Matrix simMat=MatrixUtil.computeSimilarityMatrix(bugVecList, codeVecList, dic.getNumWords());
-//		System.out.println(simMat.getRowDimension()+" "+simMat.getColumnDimension());
 	}
+	
+
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/BugCorpus/information";

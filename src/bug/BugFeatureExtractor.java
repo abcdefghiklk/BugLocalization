@@ -15,6 +15,8 @@ import java.util.TreeSet;
 
 import edu.udo.cs.wvtool.main.WVTFileInputList;
 import edu.udo.cs.wvtool.wordlist.WVTWordList;
+import sourcecode.CodeDataProcessor;
+import sourcecode.SourceCodeCorpus;
 import utils.DateFormat;
 import utils.Splitter;
 import utils.Stopword;
@@ -463,7 +465,7 @@ public class BugFeatureExtractor {
 	 */
 	public static HashMap<String, TreeSet<String>> extractFixedFiles(String srcFilePath) throws Exception{
 		HashMap<String, TreeSet<String>> idFixedFilesPairs=new HashMap<String, TreeSet<String>>();
-		if(new File(srcFilePath).isFile()){
+		if(!new File(srcFilePath).isFile()){
 			System.out.println("The input file path is invalid!");
 			return idFixedFilesPairs;
 		}
@@ -651,9 +653,12 @@ public class BugFeatureExtractor {
 	}
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
+		
 
+		
+		
 	}
 
 }

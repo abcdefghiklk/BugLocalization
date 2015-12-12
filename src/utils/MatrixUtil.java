@@ -39,7 +39,7 @@ public class MatrixUtil {
 					if(indexValuePair.length==2){
 						int index=Integer.parseInt(indexValuePair[0]);
 						double value=Double.parseDouble(indexValuePair[1]);
-						fileVec.set(0, index-1, value);
+						fileVec.set(0, index, value);
 					}
 				}
 			}
@@ -186,10 +186,10 @@ public class MatrixUtil {
 	 * @param srcFilePath
 	 * @throws Exception
 	 */
-	public static void importSimilarityMatrix(Matrix simMat, ArrayList<String> idList, String srcFilePath) throws Exception{
+	public static Matrix importSimilarityMatrix(ArrayList<String> idList, String srcFilePath) throws Exception{
 		if(!new File(srcFilePath).isFile()){
 			System.out.println("The input file path is invalid");
-			return ;
+			return Matrix.random(0, 0);
 		}
 		
 		//The file format:
@@ -204,7 +204,8 @@ public class MatrixUtil {
 		for(String id:ids){
 			idList.add(id);
 		}
-//		simMat=new Matrix(idList.length,idList.length);
+		
+		Matrix simMat=Matrix.random(idList.size(),idList.size());
 		int i=0;
 		while((line=reader.readLine())!=null){
 			String []strs=line.split("\t");
@@ -213,22 +214,21 @@ public class MatrixUtil {
 			}
 		}
 		reader.close();
-		return;
+		return simMat;
 	}
 	
 	/**
 	 * Import the similarity matrix from file,
 	 * The information is saved in simMat and idList1, idList2
-	 * @param simMat
 	 * @param idList1
 	 * @param idList2
 	 * @param srcFilePath
 	 * @throws Exception
 	 */
-	public static void importSimilarityMatrix(Matrix simMat, ArrayList<String> idList1, ArrayList<String> idList2, String srcFilePath) throws Exception{
+	public static Matrix importSimilarityMatrix(ArrayList<String> idList1, ArrayList<String> idList2, String srcFilePath) throws Exception{
 		if(!new File(srcFilePath).isFile()){
 			System.out.println("The input file path is invalid");
-			return ;
+			return Matrix.random(0, 0);
 		}
 		
 		//The file format:
@@ -249,7 +249,7 @@ public class MatrixUtil {
 		for(String id:ids){
 			idList2.add(id);
 		}
-//		simMat=new Matrix(idList.length,idList.length);
+		Matrix simMat=Matrix.random(idList1.size(), idList2.size());
 		int i=0;
 		while((line=reader.readLine())!=null){
 			String []strs=line.split("\t");
@@ -258,32 +258,42 @@ public class MatrixUtil {
 			}
 		}
 		reader.close();
-		return;
+		return simMat;
+	}
+	
+	/**
+	 * Determine whether a given indexSet contains the topK entry in the whole row
+	 * For the topK metric
+	 * @param colIndexSet
+	 * @param rowNum
+	 * @param mat
+	 * @param K
+	 * @return
+	 */
+	public static boolean isInTopK(ArrayList<Integer> colIndexSet, int rowNum, Matrix mat, int K){
+		//obtain the largest value in the indexSet
+		double maxValue=0;
+		for(int index: colIndexSet){
+			double value=mat.get(rowNum, index);
+			if(value>maxValue){
+				maxValue=value;
+			}
+		}
+		
+		//find out how many entries are larger than than the maximum
+		int countOfLargerItems=0;
+		for(int i=0;i<mat.getColumnDimension();i++){
+			if(mat.get(rowNum, i)>maxValue){
+				countOfLargerItems+=1;
+			}
+		}
+		
+		//compare this with K to determine whether it contains the topK entry
+		return (countOfLargerItems<K);
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		double [][]vec1={{0.1,0.2,0.3}};
-		double [][]vec2={{0.3,0.5,0.6}};
-		double [][]vec3={{0.4,0.8,0.8}};
-		Matrix mat1=new Matrix(vec1);
-		Matrix mat2=new Matrix(vec2);
-		Matrix mat3=new Matrix(vec3);
-		String id1="a";
-		String id2="b";		String id3="c";
-		HashMap<String, Matrix> idMatPairs=new HashMap<String,Matrix>();
-		idMatPairs.put(id1, mat1);
-		idMatPairs.put(id2, mat2);
-		idMatPairs.put(id3, mat3);
-		String pathFile="C:/Users/ql29/Documents/EClipse/BugCorpus/similarityMat";
-		exportSimilarityMatrix(idMatPairs,pathFile,3);
-		Matrix simMat=new Matrix(3,3);
-		ArrayList<String> idList=new ArrayList<String>();
-		importSimilarityMatrix(simMat,idList,pathFile);
-		for(String id:idList){
-			System.out.println(id);
-		}
-		System.out.println(simMat.get(0, 0));
-		
+		Matrix mat=Matrix.random(0, 0);
 	}
 
 }

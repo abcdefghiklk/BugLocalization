@@ -23,7 +23,7 @@ public class WVToolWrapper {
 	
 	/**
 	 * Extract the file list from an array of corpus
-	 * @param corpusDirPath
+	 * @param corpusDirPathArray
 	 * @return
 	 */
 	public static WVTFileInputList extractCorpusFileList(String []corpusDirPathArray){
@@ -35,7 +35,17 @@ public class WVToolWrapper {
 		return list;
 	}
 	
-	
+	/**
+	 * Extract the file list from a single directory
+	 * @param corpusDirPath
+	 * @return
+	 */
+	public static WVTFileInputList extractCorpusFileList(String corpusDirPath){
+		WVTFileInputList list = new WVTFileInputList(1);
+		list.addEntry(new WVTDocumentInfo(corpusDirPath,
+					"txt", "", "english", 0));
+		return list;
+	}
 	/**
 	 * Extract the corpus dictionary from the file list
 	 * @param list
