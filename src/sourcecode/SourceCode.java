@@ -11,9 +11,6 @@ public class SourceCode {
 	//full class name for file
 	private String _fullClassName; 
 	
-	//file path
-	private String _filePath;
-	
 	//file content
 	private String _content;
 	
@@ -32,7 +29,6 @@ public class SourceCode {
 	 */
 	SourceCode(){
 		this._fullClassName = new String();
-		this._filePath = new String();
 		this._content = new String();
 		this._classNameList = new ArrayList<String>();
 		this._methodNameList = new ArrayList<String>();
@@ -47,7 +43,6 @@ public class SourceCode {
 	 */
 	SourceCode(String fullClassName, String filePath, String content){
 		this._fullClassName=fullClassName;
-		this._filePath=filePath;
 		this._content=content;
 		this._classNameList = new ArrayList<String>();
 		this._methodNameList = new ArrayList<String>();
@@ -68,22 +63,6 @@ public class SourceCode {
 	 */
 	public void setFullClassName(String fullClassName) {
 		this._fullClassName = fullClassName;
-	}
-	
-	/**
-	 * Get the file path
-	 * @return
-	 */
-	public String getFilePath() {
-		return this._filePath;
-	}
-	
-	/**
-	 * Set the file path
-	 * @param filePath
-	 */
-	public void setFilePath(String filePath) {
-		this._filePath = filePath;
 	}
 	
 	/**

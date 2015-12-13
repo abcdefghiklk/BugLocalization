@@ -35,8 +35,6 @@ public class CodeDataProcessor {
 			SourceCode oneCodeFile = new SourceCode();
 			FileParser parser=new FileParser(oneFilePath);
 			
-			//set the absolute file path
-			oneCodeFile.setFilePath(oneFilePath);
 			
 			//set the full class name(package+fileName)
 			String packageName= parser.getPackageName();
@@ -49,7 +47,6 @@ public class CodeDataProcessor {
 				//full class name = package name + file name
 				fullClassName = packageName+ "." + new File(oneFilePath).getName();
 			}
-			//Modification for the aspectJ project because of its file structure???
 			oneCodeFile.setFullClassName(fullClassName);
 			
 			//set the file content
