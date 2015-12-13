@@ -1,5 +1,6 @@
 package eval;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -38,6 +39,32 @@ abstract public class Evaluation {
 	
 	public void set(String srcFilePath) throws Exception{
 		this._oracles=BugFeatureExtractor.extractFixedFiles(srcFilePath);
+	}
+	
+	/**
+	 * Obtain the index set of a given string set in the string array
+	 * @param targetSet
+	 * @param array
+	 * @return
+	 */
+	public static ArrayList<Integer> getIndexSet(TreeSet<String> targetSet, String []array){
+		ArrayList<Integer> indexSet=new ArrayList<Integer>();
+		for(int i=0;i< array.length;i++){
+//			if(targetSet.contains(array[i])){
+//				indexSet.add(i);
+//			}
+			//for aspectJ, the fixed file name contains a longer path than the class path for source code file
+			//e.g. org.aspectj.modules.weaver.src.org.aspectj.weaver.patterns.KindedPointcut.java(fixed file)
+			//	   								  org.aspectj.weaver.patterns.KindedPointcut.java(full class path)
+			//for other project, the fixed file name is the same as the class path for source code file
+			for(String oneItem:targetSet){
+				if(oneItem.contains(array[i])){
+					indexSet.add(i);
+					break;
+				}
+			}
+		}
+		return indexSet;
 	}
 	abstract double evaluate(String srcFilePath) throws Exception; 
 

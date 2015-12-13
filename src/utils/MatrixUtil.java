@@ -291,6 +291,23 @@ public class MatrixUtil {
 		//compare this with K to determine whether it contains the topK entry
 		return (countOfLargerItems<K);
 	}
+	
+	/**
+	 * Obtain the rank of the target column index in the whole row determined by the rowIndex
+	 * @param rowIndex
+	 * @param colIndex
+	 * @param mat
+	 * @return
+	 */
+	public static int getRank(int rowIndex, int colIndex, Matrix mat){
+		int rank=1;
+		for(int i=0;i< mat.getColumnDimension();i++){
+			if(mat.get(rowIndex, i)>mat.get(rowIndex, colIndex)){
+				rank++;
+			}
+		}
+		return rank;
+	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		Matrix mat=Matrix.random(0, 0);

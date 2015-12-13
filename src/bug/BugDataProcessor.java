@@ -6,10 +6,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import property.Property;
 import utils.DateFormat;
 import utils.Splitter;
-import utils.Stem;
 import utils.Stopword;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -94,7 +92,7 @@ public class BugDataProcessor {
 										if (_n.getNodeName().equals("file")) {
 											String fileName = _n
 													.getTextContent();
-											bug.addFixedFile(fileName);
+											bug.addFixedFile(fileName.replace("/", "."));
 										}
 									}
 								}

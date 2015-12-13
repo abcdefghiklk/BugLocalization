@@ -1,6 +1,5 @@
 package eval;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +84,7 @@ public class TopK extends Evaluation{
 		for(int i=0; i<scoreMat.getRowDimension(); i++){
 			String oneBugID=bugIDArray[i];
 			TreeSet<String> fixedFileSet= oracles.get(oneBugID);
-			ArrayList<Integer> indexSet = getIndexSet(fixedFileSet, codeClassArray);
+			ArrayList<Integer> indexSet = super.getIndexSet(fixedFileSet, codeClassArray);
 			if(MatrixUtil.isInTopK(indexSet, i, scoreMat, getK())){
 				numInTopK++;
 			}
@@ -94,41 +93,27 @@ public class TopK extends Evaluation{
 		return numInTopK;
 	}
 	
-	/**
-	 * Obtain the index set of a given string set in the string array
-	 * @param targetSet
-	 * @param array
-	 * @return
-	 */
-	public static ArrayList<Integer> getIndexSet(TreeSet<String> targetSet, String []array){
-		ArrayList<Integer> indexSet=new ArrayList<Integer>();
-		for(int i=0;i< array.length;i++){
-			if(targetSet.contains(array[i])){
-				indexSet.add(i);
-			}
-		}
-		return indexSet;
-	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		//bug
-		String XMLFilePath="C:/Users/ql29/Documents/EClipse/Dataset/SWTBugRepository.xml";
-		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/bugCorpus";
-//		ArrayList<BugRecord> bugList= BugDataProcessor.importFromXML(XMLFilePath);
-//		BugDataProcessor.createBugCorpus(bugList, bugCorpusDirPath);
+		String XMLFilePath="C:/Users/ql29/Documents/EClipse/Dataset/AspectJBugRepository.xml";
+		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/bugCorpus_aspectj";
+		ArrayList<BugRecord> bugList= BugDataProcessor.importFromXML(XMLFilePath);
+		BugDataProcessor.createBugCorpus(bugList, bugCorpusDirPath);
 		
 		//code
-		String codeDirPath="C:/Users/ql29/Documents/EClipse/Dataset/swt-3.1";
-		String codeCorpusDirPath="C:/Users/ql29/Documents/EClipse/codeCorpus";
-//		SourceCodeCorpus corpus=CodeDataProcessor.extractCodeData(codeDirPath, "java", 800);
-//		CodeDataProcessor.exportCodeData(codeCorpusDirPath, corpus);
+		String codeDirPath="C:/Users/ql29/Documents/EClipse/Dataset/aspectj";
+		String codeCorpusDirPath="C:/Users/ql29/Documents/EClipse/codeCorpus_aspectj";
+		SourceCodeCorpus corpus=CodeDataProcessor.extractCodeData(codeDirPath, "java", 800);
+		CodeDataProcessor.exportCodeData(codeCorpusDirPath, corpus);
 		
-		//vector and VSM similarities
+		
+//		vector and VSM similarities
 		String bugCorpusPath= Paths.get(bugCorpusDirPath,"information").toString();
 		String codeCorpusPath=Paths.get(codeCorpusDirPath,"codeContentCorpus").toString();
 		String bugVecFilePath= Paths.get(bugCorpusDirPath,"vectors").toString(); 
 		String codeVecFilePath= Paths.get(codeCorpusDirPath,"vectors").toString(); 
-		String simMatFilePath="C:/Users/ql29/Documents/EClipse/simScore";
+		String simMatFilePath="C:/Users/ql29/Documents/EClipse/simScore_aspectj";
 		String oracleFilePath=Paths.get(bugCorpusDirPath,"fixedFiles").toString();
 		VSMScore.generate(bugCorpusPath, codeCorpusPath, bugVecFilePath, codeVecFilePath, simMatFilePath);
 		TopK topK=new TopK(10);
