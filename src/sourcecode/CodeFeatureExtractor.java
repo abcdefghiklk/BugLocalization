@@ -2,9 +2,13 @@ package sourcecode;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import utils.WVToolWrapper;
 import edu.udo.cs.wvtool.main.WVTFileInputList;
@@ -57,6 +61,88 @@ public class CodeFeatureExtractor {
 		reader.close();
 		return dictionary;
 	}
+	
+	/**
+	 * Extract the <codeFullClass, codeLength> pairs from corpus object
+	 * @param corpus
+	 * @return
+	 */
+	public static HashMap<String, Integer> extractCodeLength(SourceCodeCorpus corpus) {
+		HashMap<String, Integer> fullClassLengthPairs= new HashMap<String, Integer>();
+		for(SourceCode oneCodeFile: corpus.getSourceCodeList()){
+			String fullClassName=oneCodeFile.getFullClassName();
+			int codeLength=oneCodeFile.getContent().trim().split(" ").length;
+			fullClassLengthPairs.put(fullClassName, codeLength);
+		}
+		return fullClassLengthPairs;
+	}
+	
+	/**
+	 * Extract the <codeFullClass, codeLength> pairs from directory
+	 * @param corpusDirPath
+	 * @return
+	 * @throws Exception
+	 */
+	public static HashMap<String, Integer> extractCodeLength(String corpusDirPath) throws Exception {
+		HashMap<String, Integer> fullClassLengthPairs=new HashMap<String, Integer>();
+		if(!new File(corpusDirPath).isDirectory()){
+			System.out.println("The input directory is invalid!");
+			return fullClassLengthPairs;
+		}
+		for(File file: new File(corpusDirPath).listFiles()){
+			if(file.isFile()){
+				String fileName=file.getName().trim();
+				BufferedReader reader=new BufferedReader(new FileReader(file));
+				String line=reader.readLine();
+				String []strs=line.split(" ");
+				int fileLength=strs.length;
+				reader.close();
+				fullClassLengthPairs.put(fileName, fileLength);
+			}
+		}
+		return fullClassLengthPairs;
+	}
+	
+	/**
+	 * Save the <codeFullClass, codeLength> pairs to the target file
+	 * @param dstFilePath
+	 * @param fullClassLengthPairs
+	 * @throws IOException
+	 */
+	public static void saveCodeLength(String dstFilePath, HashMap<String, Integer> fullClassLengthPairs) throws IOException{
+		FileWriter writer=new FileWriter(dstFilePath);
+		StringBuffer buf=new StringBuffer();
+		for(Entry<String, Integer> onepair:fullClassLengthPairs.entrySet()){
+			buf.append(onepair.getKey()+"\t"+onepair.getValue()+"\r\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
+	
+	/**
+	 * Load the <codeFullClass, codeLength> pairs to the source file
+	 * @param srcFilePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static HashMap<String, Integer> loadCodeLength(String srcFilePath) throws Exception{
+		HashMap<String, Integer> fileLengthPairs=new HashMap<String, Integer>();
+		if(!new File(srcFilePath).isFile()){
+			System.out.println("The input file path is invalid!");
+			return fileLengthPairs;
+		}
+		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
+		String line=new String();
+		while((line=reader.readLine())!=null){
+			String strs[]=line.split("\t");
+			String fileName=strs[0].trim();
+			int fileSize=Integer.parseInt(strs[1].trim());
+			fileLengthPairs.put(fileName, fileSize);
+		}
+		reader.close();
+		return fileLengthPairs;
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
