@@ -223,7 +223,18 @@ public class Config {
 		if(pro.containsKey("maxCutoffFrequency")){
 			this._maxCutoffFrequency=Integer.parseInt(pro.getProperty("maxCutoffFrequency"));
 		}
-//		if(pro.)
+		if(pro.containsKey("revisedUsed")){
+			this._revisedUsed=Boolean.parseBoolean(pro.getProperty("revisedUsed"));
+		}
+		if(pro.containsKey("transformationFunctionType")){
+			this._transformationFunctionType=pro.getProperty("transformationFunctionType");
+		}
+		if(pro.containsKey("simiScoreUsed")){
+			this._simiScoreUsed=Boolean.parseBoolean(pro.getProperty("simiScoreUsed"));
+		}
+		if(pro.containsKey("alpha")){
+//			this._alpha=Double.parseDouble()
+		}
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
