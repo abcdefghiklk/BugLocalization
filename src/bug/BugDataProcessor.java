@@ -1,22 +1,13 @@
 package bug;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-<<<<<<< HEAD
 import utils.DateFormat;
 import utils.Splitter;
-=======
-import property.Property;
-import utils.Splitter;
-import utils.Stem;
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 import utils.Stopword;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,11 +21,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import java.io.*;
-<<<<<<< HEAD
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-=======
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,13 +42,9 @@ public class BugDataProcessor {
 	 * @param XMLFilePath
 	 * @return
 	 */
-<<<<<<< HEAD
 	static public ArrayList<BugRecord> importFromXML(String XMLFilePath){
 		ArrayList<BugRecord> bugList=new ArrayList<BugRecord>();
-=======
-	static public ArrayList<Bug> importFromXML(String XMLFilePath){
-		ArrayList<Bug> bugList=new ArrayList<Bug>();
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
+
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory
 				.newInstance();
 		try {
@@ -79,11 +63,7 @@ public class BugDataProcessor {
 								.getNamedItem("opendate").getNodeValue();
 						String fixDate = bugNode.getAttributes()
 								.getNamedItem("fixdate").getNodeValue();
-<<<<<<< HEAD
 						BugRecord bug = new BugRecord();
-=======
-						Bug bug = new Bug();
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 						bug.setBugId(bugId);
 						bug.setOpenDate(openDate);
 						bug.setFixDate(fixDate);
@@ -117,11 +97,7 @@ public class BugDataProcessor {
 										if (_n.getNodeName().equals("file")) {
 											String fileName = _n
 													.getTextContent();
-<<<<<<< HEAD
 											bug.addFixedFile(fileName.replace("/", "."));
-=======
-											bug.addFixedFile(fileName);
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 										}
 									}
 								}
@@ -141,11 +117,7 @@ public class BugDataProcessor {
 	 * @param bugList
 	 * @param XMLFilePath
 	 */
-<<<<<<< HEAD
 	static public void exportToXML(ArrayList<BugRecord> bugList, String XMLFilePath){
-=======
-	static public void exportToXML(ArrayList<Bug> bugList, String XMLFilePath){
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory
 				.newInstance();
 		try {
@@ -153,22 +125,12 @@ public class BugDataProcessor {
 			Document doc=domBuilder.newDocument();
 			Element rootNode=doc.createElement("bugrepository");
 			doc.appendChild(rootNode);
-<<<<<<< HEAD
 			for(BugRecord _bug:bugList){
 				Element _bugNode=doc.createElement("bug");
 				_bugNode.setAttribute("id", _bug.getBugId());
 				SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				_bugNode.setAttribute("opendate", format.format(_bug.getOpenDate()));
 				_bugNode.setAttribute("fixdate", format.format(_bug.getFixDate()));
-=======
-			for(Bug _bug:bugList){
-				Element _bugNode=doc.createElement("bug");
-				_bugNode.setAttribute("id", _bug.getBugId());
-				_bugNode.setAttribute("opendate", _bug.getOpenDate());
-				_bugNode.setAttribute("fixdate", _bug.getFixDate());
-				
-
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 				
 				Element _bugInformationNode=doc.createElement("buginformation");
 				
@@ -185,11 +147,7 @@ public class BugDataProcessor {
 				
 				Element _fixedFilesNode=doc.createElement("fixedFiles");
 				
-<<<<<<< HEAD
 				for(String oneFixedFileName: _bug.getFixedFileSet()){
-=======
-				for(String oneFixedFileName: _bug.getSet()){
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 					Element _oneFixedFileNode=doc.createElement("file");
 					_oneFixedFileNode.appendChild(doc.createTextNode(oneFixedFileName));
 					_fixedFilesNode.appendChild(_oneFixedFileNode);
@@ -217,8 +175,6 @@ public class BugDataProcessor {
 		}
 		
 	}
-	
-<<<<<<< HEAD
 	/**
 	 * Create Bug Corpus
 	 * @param bugList
@@ -427,14 +383,6 @@ public class BugDataProcessor {
 //		exportToXML(bugList,outputXMLFilePath);
 //		bugCorpusPath="C:/Users/ql29/Dropbox/Open University/OU Research/codes_Datas/BRTracer/bugCorpus";
 //		BugDataProcessor.createBugCorpus(bugList, bugCorpusPath);
-=======
-	public static void main(String []args){
-		ArrayList<Bug> bugList=new ArrayList<Bug>();
-		String inputXMLFilePath="C:/Users/dell/Dropbox/Open University/OU Research/codes&Datas/BRTracer/Dataset/AspectJBugRepository.xml";
-		bugList=importFromXML(inputXMLFilePath);
-		String outputXMLFilePath="C:/Users/dell/Dropbox/Open University/OU Research/codes&Datas/BRTracer/Dataset/AspectJBugRepository_output.xml";;
-		exportToXML(bugList,outputXMLFilePath);
-		
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
+
 	}
 }

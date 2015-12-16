@@ -26,10 +26,7 @@ public class ASTCreator {
 			while ((line = reader.readLine()) != null)
 				contentBuffer.append(line+"\r\n");
 			content = contentBuffer.toString();
-<<<<<<< HEAD
 			reader.close();
-=======
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

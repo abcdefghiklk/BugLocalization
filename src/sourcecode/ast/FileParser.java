@@ -2,7 +2,6 @@ package sourcecode.ast;
 
 import java.io.*;
 import java.util.ArrayList;
-<<<<<<< HEAD
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -13,32 +12,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-=======
-import java.util.List;
 
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.FieldAccess;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.Javadoc;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 
 import utils.Splitter;
 
@@ -47,22 +21,14 @@ public class FileParser {
 	private CompilationUnit cu = null;
 
 	/**
-<<<<<<< HEAD
 	 * Initialize a file parser given the target file
 	 * @param file
-=======
-	 * ���ָ����java�ļ���ʼ��CompilationUnit
-	 * 
-	 * @param file:java �ļ�
-	 *            
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	 */
 	public FileParser(File file) {
 		ASTCreator creator = new ASTCreator();
 		creator.getFileContent(file);
 		cu = creator.getCompilationUnit();
 	}
-<<<<<<< HEAD
 	
 	/**
 	 * Initialize a file parser given the target file path
@@ -85,13 +51,6 @@ public class FileParser {
 	/**
 	 * Get the lines of code of a source code file
 	 * @return
-=======
-
-	/**
-	 * ��ȡjava�ļ��Ĵ�������
-	 * 
-	 * @return ��������
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	 */
 	public int getLinesOfCode() {
 		this.deleteNoNeededNode();
@@ -107,14 +66,8 @@ public class FileParser {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Get the content of a source code file 
 	 * @return
-=======
-	 * ��ȡ����ı��ĵ���
-	 * 
-	 * @return ����ı��ĵ�������
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	 */
 	public String[] getContent() {
 		String[] tokensInSourceCode = Splitter.splitSourceCode(this
@@ -126,15 +79,10 @@ public class FileParser {
 		String content = sourceCodeContentBuffer.toString().toLowerCase();
 		return content.split(" ");
 	}
-<<<<<<< HEAD
-	
 	/**
 	 * Get the class and method names of a source code file
 	 * @return
 	 */
-=======
-
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	public String[] getClassNameAndMethodName() {
 		String content = (this.getAllClassName() + " " + this
 				.getAllMethodName()).toLowerCase();
@@ -142,14 +90,8 @@ public class FileParser {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Get the package name of a source code file
 	 * @return
-=======
-	 * ��ȡ�ļ����ڰ���
-	 * 
-	 * @return ����
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	 */
 	public String getPackageName() {
 
@@ -158,18 +100,10 @@ public class FileParser {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Get all method names of a source code file
 	 * @return
 	 */
 	public String getAllMethodName() {
-=======
-	 * ��ȡ�ļ��е����з�����
-	 * 
-	 * @return ��������ɵ��ַ�
-	 */
-	private String getAllMethodName() {
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 		ArrayList<String> methodNameList = new ArrayList<String>();
 		for (int i = 0; i < cu.types().size(); i++) {
 			TypeDeclaration type = (TypeDeclaration) cu.types().get(i);
@@ -189,18 +123,10 @@ public class FileParser {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Get all class names of a source code file
 	 * @return
 	 */
 	public String getAllClassName() {
-=======
-	 * ��ȡ�ļ��е���������
-	 * 
-	 * @return ������ɵ��ַ�
-	 */
-	private String getAllClassName() {
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 		ArrayList<String> classNameList = new ArrayList<String>();
 		for (int i = 0; i < cu.types().size(); i++) {
 			TypeDeclaration type = (TypeDeclaration) cu.types().get(i);
@@ -215,17 +141,11 @@ public class FileParser {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Delete all useless nodes, including
 	 * I) package member type declaration nodes
 	 * II) package declaration nodes
 	 * III) import declaration nodes
 	 ** @return
-=======
-	 * ɾ���ļ��в���Ҫ����Ϣ
-	 * 
-	 * @return �ļ����ַ��ʾ
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	 */
 	private String deleteNoNeededNode() {
 		cu.accept(new ASTVisitor() {
@@ -251,15 +171,10 @@ public class FileParser {
 		});
 		return cu.toString();
 	}
-<<<<<<< HEAD
-	
 	/**
 	 * Export all import information into a file for a given source code file
 	 * @param writeImport
 	 */
-=======
-
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 	public void getImport(final FileWriter writeImport){
 		cu.accept(new ASTVisitor() {
 			@Override
