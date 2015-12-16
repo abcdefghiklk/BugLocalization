@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import config.Config;
 import utils.DateFormat;
 import utils.Splitter;
 import utils.Stopword;
@@ -35,77 +36,64 @@ import java.util.regex.Pattern;
 public class BugDataProcessor {
 	/**
 	 * Import the bug report data to a list of Bug Class objects
-	 * @param XMLFilePath
 	 * @return
+	 * @throws Exception 
 	 */
-	static public ArrayList<BugRecord> importFromXML(String XMLFilePath){
+	static public ArrayList<BugRecord> importFromXML() throws Exception{
+		String XMLFilePath=Config.getInstance().getBugLogFile();
 		ArrayList<BugRecord> bugList=new ArrayList<BugRecord>();
 
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory
 				.newInstance();
-		try {
-			DocumentBuilder domBuilder = domFactory.newDocumentBuilder();
-			InputStream is = new FileInputStream(XMLFilePath);
-			Document doc = domBuilder.parse(is);
-			Element root = doc.getDocumentElement();
-			NodeList bugRepository = root.getChildNodes();
-			if (bugRepository != null) {
-				for (int i = 0; i < bugRepository.getLength(); i++) {
-					Node bugNode = bugRepository.item(i);
-					if (bugNode.getNodeType() == Node.ELEMENT_NODE) {
-						String bugId = bugNode.getAttributes()
-								.getNamedItem("id").getNodeValue();
-						String openDate = bugNode.getAttributes()
-								.getNamedItem("opendate").getNodeValue();
-						String fixDate = bugNode.getAttributes()
-								.getNamedItem("fixdate").getNodeValue();
-						BugRecord bug = new BugRecord();
-						bug.setBugId(bugId);
-						bug.setOpenDate(openDate);
-						bug.setFixDate(fixDate);
-						for (Node node = bugNode.getFirstChild(); node != null; node = node
-								.getNextSibling()) {
-							if (node.getNodeType() == Node.ELEMENT_NODE) {
-								if (node.getNodeName().equals("buginformation")) {
-									NodeList _l = node.getChildNodes();
-									for (int j = 0; j < _l.getLength(); j++) {
-										Node _n = _l.item(j);
-										if (_n.getNodeName().equals("summary")) {
-											String summary = _n
-													.getTextContent();
-											bug.setBugSummary(summary);
-										}
-
-										if (_n.getNodeName().equals(
-												"description")) {
-											String description = _n
-													.getTextContent();
-											bug.setBugDescription(description);
-										}
-
+		DocumentBuilder domBuilder = domFactory.newDocumentBuilder();
+		InputStream is = new FileInputStream(XMLFilePath);
+		Document doc = domBuilder.parse(is);
+		Element root = doc.getDocumentElement();
+		NodeList bugRepository = root.getChildNodes();
+		if (bugRepository != null) {
+			for (int i = 0; i < bugRepository.getLength(); i++) {
+				Node bugNode = bugRepository.item(i);
+				if (bugNode.getNodeType() == Node.ELEMENT_NODE) {
+					String bugId = bugNode.getAttributes().getNamedItem("id").getNodeValue();
+					String openDate = bugNode.getAttributes().getNamedItem("opendate").getNodeValue();
+					String fixDate = bugNode.getAttributes().getNamedItem("fixdate").getNodeValue();
+					BugRecord bug = new BugRecord();
+					bug.setBugId(bugId);
+					bug.setOpenDate(openDate);
+					bug.setFixDate(fixDate);
+					for (Node node = bugNode.getFirstChild(); node != null; node = node.getNextSibling()) {
+						if (node.getNodeType() == Node.ELEMENT_NODE) {
+							if (node.getNodeName().equals("buginformation")) {
+								NodeList _l = node.getChildNodes();
+								for (int j = 0; j < _l.getLength(); j++) {
+									Node _n = _l.item(j);
+									if (_n.getNodeName().equals("summary")) {
+										String summary = _n.getTextContent();
+										bug.setBugSummary(summary);
 									}
-
+									if (_n.getNodeName().equals("description")) {
+										String description = _n.getTextContent();
+										bug.setBugDescription(description);
+									}
 								}
-								if (node.getNodeName().equals("fixedFiles")) {
-									NodeList _l = node.getChildNodes();
-									for (int j = 0; j < _l.getLength(); j++) {
-										Node _n = _l.item(j);
-										if (_n.getNodeName().equals("file")) {
-											String fileName = _n
-													.getTextContent();
-											bug.addFixedFile(fileName.replace("/", "."));
-										}
+							}
+							if (node.getNodeName().equals("fixedFiles")) {
+								NodeList _l = node.getChildNodes();
+								for (int j = 0; j < _l.getLength(); j++) {
+									Node _n = _l.item(j);
+									if (_n.getNodeName().equals("file")) {
+										String fileName = _n.getTextContent();
+										bug.addFixedFile(fileName.replace("/", "."));
 									}
 								}
 							}
 						}
-						bugList.add(bug);
 					}
+					bugList.add(bug);
 				}
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
 		}
+//		Config.getInstance().s
 		return bugList;
 	}
 	/**
@@ -330,7 +318,7 @@ public class BugDataProcessor {
 	}
 	
 	
-	public static void parseArgs(String []args) throws IOException{
+	public static void parseArgs(String []args) throws Exception{
 		int i = 0;
 		String inputXMLFilePath=new String();
 		String bugCorpusPath=new String();
@@ -360,12 +348,12 @@ public class BugDataProcessor {
 		}
 		else{
 			ArrayList<BugRecord> bugList=new ArrayList<BugRecord>();
-			bugList=importFromXML(inputXMLFilePath);
+			bugList=importFromXML();
 			BugDataProcessor.createBugCorpus(bugList, bugCorpusPath);
 		}
 	}
 	
-	public static void main(String []args) throws IOException{
+	public static void main(String []args) throws Exception{
 		if(args.length==0){
 			showHelp();
 		}

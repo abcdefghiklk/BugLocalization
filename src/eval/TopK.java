@@ -98,7 +98,7 @@ public class TopK extends Evaluation{
 		//bug
 		String XMLFilePath="C:/Users/ql29/Documents/EClipse/Dataset/AspectJBugRepository.xml";
 		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/bugCorpus_aspectj";
-		ArrayList<BugRecord> bugList= BugDataProcessor.importFromXML(XMLFilePath);
+		ArrayList<BugRecord> bugList= BugDataProcessor.importFromXML();
 		BugDataProcessor.createBugCorpus(bugList, bugCorpusDirPath);
 		
 		//code

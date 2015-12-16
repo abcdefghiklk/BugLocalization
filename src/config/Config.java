@@ -19,11 +19,15 @@ public class Config {
 	private String _outputFile; // The file recording the experimental results
 	
 	//configuration for bugs
+	private String _bugCorpusDir; //The bug corpus directory path
+	
 	private int _bugReportCount; //The number of bug reports/bugs
 	
 	private int _bugTermCount; //The number of terms for bugs
 	
 	//configuration for codes
+	private String _codeCorpusDir; //The code corpus directory path
+	
 	private String _fileType; //The type of source code files 
 	
 	private int _segmentationLength; //The segmentation length
@@ -35,6 +39,7 @@ public class Config {
 	private int _codeTermCount; //The number of terms for codes
 
 	//features
+	private String _featuresDir; //The directory path for features
 	
 	//VSM (has to be used)
 	private int _dicSize; //The merged dictionary size
@@ -55,9 +60,10 @@ public class Config {
 	
 	private double _alpha; //Linear Interpolation Parameter in [0,1]
 	
-	//
 	
 	//evaluation
+	private String _evaluationDir; //The directory path for evaluation results
+	
 	private boolean _MAPUsed; //Whether the MAP metric is used
 
 	private boolean _topKUsed; //Whether the TopK metric is used
@@ -74,11 +80,17 @@ public class Config {
 		this._bugLogFile=new String();
 		this._intermediateDir=new String();
 		this._outputFile=new String();
+		
+		this._bugCorpusDir=new String();
 		this._bugReportCount=0;
 		this._bugTermCount=0;
+		
+		this._codeCorpusDir=new String();
 		this._fileCount=0;
 		this._originalfilecount=0;
 		this._codeTermCount=0;
+		
+		this._featuresDir=new String();
 		this._dicSize=0;
 		this._minCutoffFrequency=0;
 		this._maxCutoffFrequency=0;
@@ -97,20 +109,12 @@ public class Config {
 		this._alpha=0.5d;
 		
 		//by default, only the Top5 metrics is used for evaluation
+		this._evaluationDir=new String();
 		this._MAPUsed=false;
 		this._topKUsed=true;
 		this._k=5;
 		this._MRRUsed=false;
 	}
-	
-	/**
-	 * Set source code file type
-	 * @param fileType
-	 */
-	public void setFileType(String fileType){
-		this._fileType=fileType;
-	}
-	
 	
 	/**
 	 * Set the input and output paths
@@ -127,6 +131,31 @@ public class Config {
 	}
 	
 	/**
+	 * Set the bug corpus directory
+	 * @param bugCorpusDir
+	 */
+	public void setBugCorpusDir(String bugCorpusDir){
+		this._bugCorpusDir=bugCorpusDir;
+	}
+	
+	/**
+	 * Set the code corpus directory
+	 * @param codeCorpusDir
+	 */
+	public void setCodeCorpusDir(String codeCorpusDir){
+		this._codeCorpusDir=codeCorpusDir;
+	}
+	
+	/**
+	 * Set source code file type
+	 * @param fileType
+	 */
+	public void setFileType(String fileType){
+		this._fileType=fileType;
+	}
+	
+	
+	/**
 	 * Set the dictionary size
 	 * @param dicSize
 	 */
@@ -136,10 +165,12 @@ public class Config {
 	
 	/**
 	 * Set the features used 
+	 * @param featuresDir
 	 * @param revisedUsed
 	 * @param simiScoreUsed
 	 */
-	public void setFeatures(boolean revisedUsed, boolean simiScoreUsed, double alpha){
+	public void setFeatures(String featuresDir, boolean revisedUsed, boolean simiScoreUsed, double alpha){
+		this._featuresDir=featuresDir;
 		this._revisedUsed=revisedUsed;
 		this._simiScoreUsed=simiScoreUsed;
 		this._alpha=alpha;
@@ -152,7 +183,8 @@ public class Config {
 	 * @param k
 	 * @param MRRUsed
 	 */
-	public void setEvaluations(boolean MAPUsed, boolean topKUsed, int k, boolean MRRUsed){
+	public void setEvaluations(String evaluationDir, boolean MAPUsed, boolean topKUsed, int k, boolean MRRUsed){
+		this._evaluationDir=evaluationDir;
 		this._MAPUsed=MAPUsed;
 		this._topKUsed=topKUsed;
 		this._k=k;
@@ -192,6 +224,39 @@ public class Config {
 	}
 	
 	/**
+	 * Get the bug corpus directory path
+	 * @return
+	 */
+	public String getBugCorpusDir(){
+		return(this._bugCorpusDir);
+	}
+	
+	/**
+	 * Get the code directory path
+	 * @return
+	 */
+	public String getCodeCorpusDir(){
+		return(this._codeCorpusDir);
+	}
+	
+	/**
+	 * Get the features directory path
+	 * @return
+	 */
+	public String getFeaturesDir(){
+		return(this._featuresDir);
+	}
+	
+	/**
+	 * Get the evaluation directory path
+	 * @return
+	 */
+	public String getEvaluationDir(){
+		return(this._evaluationDir);
+	}
+	
+	
+	/**
 	 * Get the dictionary size
 	 * @return
 	 */
@@ -210,13 +275,19 @@ public class Config {
 		pro.setProperty("bugLogFile", this._bugLogFile);
 		pro.setProperty("intermediateDir", this._intermediateDir);
 		pro.setProperty("outputFile", this._outputFile);
+		
+		pro.setProperty("bugCorpusDir", this._bugCorpusDir);
 		pro.setProperty("bugReportCount", String.valueOf(this._bugReportCount));
 		pro.setProperty("bugTermCount", String.valueOf(this._bugTermCount));
+		
+		pro.setProperty("codeCorpusDir", this._codeCorpusDir);
 		pro.setProperty("fileType", this._fileType);
 		pro.setProperty("segmentationLength", String.valueOf(this._segmentationLength));
 		pro.setProperty("fileCount", String.valueOf(this._fileCount));
 		pro.setProperty("originalFileCount", String.valueOf(this._originalfilecount));
 		pro.setProperty("codeTermCount", String.valueOf(this._codeTermCount));
+		
+		pro.setProperty("featuresDir", this._featuresDir);
 		pro.setProperty("dicSize", String.valueOf(this._dicSize));
 		pro.setProperty("vectorType", this._vectorType);
 		pro.setProperty("minCutoffFrequence", String.valueOf(this._minCutoffFrequency));
@@ -225,6 +296,8 @@ public class Config {
 		pro.setProperty("transformationFunctionType", this._transformationFunctionType);
 		pro.setProperty("simiScoreUsed", String.valueOf(this._simiScoreUsed));
 		pro.setProperty("alpha", String.valueOf(this._alpha));
+		
+		pro.setProperty("evaluationDir", this._evaluationDir);
 		pro.setProperty("MAPUsed", String.valueOf(this._MAPUsed));
 		pro.setProperty("topKUsed", String.valueOf(this._topKUsed));
 		pro.setProperty("k", String.valueOf(this._k));
