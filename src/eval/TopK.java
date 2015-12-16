@@ -115,11 +115,11 @@ public class TopK extends Evaluation{
 		String codeVecFilePath= Paths.get(codeCorpusDirPath,"vectors").toString(); 
 		String simMatFilePath="C:/Users/ql29/Documents/EClipse/simScore_aspectj";
 		String oracleFilePath=Paths.get(bugCorpusDirPath,"fixedFiles").toString();
-		VSMScore.generate(bugCorpusPath, codeCorpusPath, bugVecFilePath, codeVecFilePath, simMatFilePath);
-		TopK topK=new TopK(10);
-		topK.setOracle(oracleFilePath);
-		double result=topK.evaluate(simMatFilePath);
-		System.out.println(result);
+//		VSMScore.generate(bugCorpusPath, codeCorpusPath, bugVecFilePath, codeVecFilePath, simMatFilePath);
+//		TopK topK=new TopK(10);
+//		topK.setOracle(oracleFilePath);
+//		double result=topK.evaluate(simMatFilePath);
+//		System.out.println(result);
 	}
 
 

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import Jama.Matrix;
 
@@ -145,6 +146,39 @@ public class MatrixUtil {
 	}
 	
 	/**
+	 * Export the rowSet, colSet and matrix to the file
+	 * @param rowSet
+	 * @param colSet
+	 * @param mat
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void exportMatrix(Set<String> rowSet, Set<String> colSet, Matrix mat, String dstFilePath) throws IOException{
+		FileWriter writer=new FileWriter(dstFilePath);
+		StringBuffer buf=new StringBuffer();
+		//First line saves the row ids
+		for(String id: rowSet){
+			buf.append(id+"\t");
+		}
+		buf.append("\n");
+		
+		//Second line saves the column ids
+		for(String id: colSet){
+			buf.append(id+"\t");
+		}
+		buf.append("\n");
+		for(int i=0;i<mat.getRowDimension();i++){
+			for(int j=0;j<mat.getColumnDimension();j++){
+				buf.append(String.valueOf(mat.get(i, j))+"\t");
+			}
+			buf.append("\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
+	
+	
+	/**
 	 * Export the similarity Matrix to file
 	 * @param idMatPairs1
 	 * @param idMatPairs2
@@ -153,28 +187,8 @@ public class MatrixUtil {
 	 * @throws IOException
 	 */
 	public static void exportSimilarityMatrix(HashMap<String, Matrix> idMatPairs1, HashMap<String, Matrix> idMatPairs2, String dstFilePath, int dicSize) throws IOException{
-		FileWriter writer=new FileWriter(dstFilePath);
-		StringBuffer buf=new StringBuffer();
-		//First line saves the row ids
-		for(String id: idMatPairs1.keySet()){
-			buf.append(id+"\t");
-		}
-		buf.append("\n");
-		
-		//Second line saves the column ids
-		for(String id: idMatPairs2.keySet()){
-			buf.append(id+"\t");
-		}
-		buf.append("\n");
 		Matrix simMat=computeSimilarityMatrix(idMatPairs1,idMatPairs2,dicSize);
-		for(int i=0;i<simMat.getRowDimension();i++){
-			for(int j=0;j<simMat.getColumnDimension();j++){
-				buf.append(String.valueOf(simMat.get(i, j))+"\t");
-			}
-			buf.append("\n");
-		}
-		writer.write(buf.toString());
-		writer.close();
+		exportMatrix(idMatPairs1.keySet(),idMatPairs2.keySet(),simMat,dstFilePath);
 	}
 	
 	
@@ -307,6 +321,21 @@ public class MatrixUtil {
 			}
 		}
 		return rank;
+	}
+	
+	/**
+	 * Get the index of the target string in the string array
+	 * @param targetString
+	 * @param strArray
+	 * @return
+	 */
+	public static int getIndex(String targetString,String []strArray){
+		for(int i=0;i<strArray.length;i++){
+			if(strArray[i]==targetString){
+				return i;
+			}
+		}
+		return -1;
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub

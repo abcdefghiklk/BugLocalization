@@ -634,7 +634,43 @@ public class BugFeatureExtractor {
 		return dictionary;
 	}
 	
-
+	/**
+	 * Extract the past bugs that fixed the target source code file
+	 * @param fileClassName
+	 * @param bugID
+	 * @param bugList
+	 * @return
+	 */
+	public static HashMap<String, Integer> getPastBugsContainingTargetFile(String fileClassName, String bugID, ArrayList<BugRecord> bugList){
+		HashMap<String, Integer> pairs=new HashMap<String, Integer>();
+		Date date=new Date();
+		for(BugRecord _bug:bugList){
+			if(_bug.getBugId()==bugID){
+				date=_bug.getFixDate();
+				break;
+			}
+		}
+		if(date==new Date()){
+			System.out.println("The input bugID does not exist in the bug log");
+			return pairs;
+		}
+		
+		//find the past bug reports
+		for(BugRecord _bug:bugList){
+			if(_bug.getFixDate().compareTo(date)<0){
+				//find the bug reports containing the source code file
+				for(String oneFixedFile:_bug.getFixedFileSet()){
+					if(oneFixedFile.contains(fileClassName)){
+						pairs.put(_bug.getBugId(),_bug.getFixedFileSet().size());
+					}
+				}
+			}
+		}
+		return pairs;
+	}
+	
+	
+	
 	/**
 	 * split and then filter the ones that are stopwords
 	 * @param content

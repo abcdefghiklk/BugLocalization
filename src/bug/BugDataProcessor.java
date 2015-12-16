@@ -30,11 +30,7 @@ import java.util.regex.Pattern;
 /**
  * 
  * @author Qiuchi Li
-<<<<<<< HEAD
  * BugDataProcessor is the class for Importing/Processing/Exporting Bug Data
-=======
- * BugDataProcessor is the class for Input/Output Bug Data
->>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
  */
 public class BugDataProcessor {
 	/**

@@ -104,6 +104,15 @@ public class Config {
 	}
 	
 	/**
+	 * Set source code file type
+	 * @param fileType
+	 */
+	public void setFileType(String fileType){
+		this._fileType=fileType;
+	}
+	
+	
+	/**
 	 * Set the input and output paths
 	 * @param datasetDir
 	 * @param bugLogPath
@@ -115,6 +124,14 @@ public class Config {
 		this._bugLogFile=bugLogPath;
 		this._intermediateDir=intermediateDirPath;
 		this._outputFile=outputFile;
+	}
+	
+	/**
+	 * Set the dictionary size
+	 * @param dicSize
+	 */
+	public void setDicSize(int dicSize){
+		this._dicSize=dicSize;
 	}
 	
 	/**
@@ -140,6 +157,46 @@ public class Config {
 		this._topKUsed=topKUsed;
 		this._k=k;
 		this._MRRUsed=MRRUsed;
+	}
+	
+	/**
+	 * Get dataset directory path
+	 * @return
+	 */
+	public String getDatasetDir(){
+		return(this._datasetDir);
+	}
+	
+	/**
+	 * Get bug log file path
+	 * @return
+	 */
+	public String getBugLogFile(){
+		return(this._bugLogFile);
+	}
+	
+	/**
+	 * Get the directory path for intermediate files
+	 * @return
+	 */
+	public String getIntermediateDir(){
+		return(this._intermediateDir);
+	}
+	
+	/**
+	 * Get the output file path
+	 * @return
+	 */
+	public String getOutputFile(){
+		return(this._outputFile);
+	}
+	
+	/**
+	 * Get the dictionary size
+	 * @return
+	 */
+	public int getDicSize(){
+		return(this._dicSize);
 	}
 	
 	/**
@@ -175,6 +232,11 @@ public class Config {
 		pro.store(new FileWriter(configFilePath), null);
 	}
 	
+	/**
+	 * Import the configuration from a file
+	 * @param configFilePath
+	 * @throws Exception
+	 */
 	public void importConfig(String configFilePath) throws Exception{
 		Properties pro=new Properties();
 		pro.load(new FileReader(configFilePath));
@@ -233,14 +295,50 @@ public class Config {
 			this._simiScoreUsed=Boolean.parseBoolean(pro.getProperty("simiScoreUsed"));
 		}
 		if(pro.containsKey("alpha")){
-//			this._alpha=Double.parseDouble()
+			this._alpha=Double.parseDouble(pro.getProperty("alpha"));
+		}
+		if(pro.containsKey("MAPUsed")){
+			this._MAPUsed=Boolean.parseBoolean(pro.getProperty("MAPUsed"));
+		}
+		if(pro.containsKey("topKUsed")){
+			this._topKUsed=Boolean.parseBoolean(pro.getProperty("topKUsed"));
+		}
+		if(pro.containsKey("k")){
+			this._k=Integer.parseInt(pro.getProperty("k"));
+		}
+		if(pro.containsKey("MRRUsed")){
+			this._MRRUsed=Boolean.parseBoolean("MRRUsed");
 		}
 	}
+	
+	//a static object
+	private static Config cfg=new Config();
+	
+	/**
+	 * Create an instance using the input paths
+	 * @param datasetDir
+	 * @param bugLogPath
+	 * @param intermediateDirPath
+	 * @param outputFile
+	 */
+	private static void createInstance(String datasetDir, String bugLogPath, String intermediateDirPath, String outputFile){
+		cfg.setPaths(datasetDir, bugLogPath, intermediateDirPath, outputFile);
+	}
+	/**
+	 * Get the static object
+	 * @return
+	 */
+	public static Config getInstance(){
+		return cfg;
+	}
+	
+	
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		String propertyFilePath="C:/Users/ql29/Documents/EClipse/property";
-		Config config=new Config();
-		
-		config.exportConfig(propertyFilePath);
+		Config.createInstance(propertyFilePath, propertyFilePath, propertyFilePath, propertyFilePath);
+		Config.getInstance().setFileType("C++");
+		Config.getInstance().exportConfig(propertyFilePath);
+
 	}
 }
