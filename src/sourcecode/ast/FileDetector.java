@@ -1,6 +1,13 @@
 package sourcecode.ast;
 
+<<<<<<< HEAD
 import java.io.File;
+=======
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+>>>>>>> f7a82a6109bed7ab926545abb4e8c76590a8f4ec
 import java.util.LinkedList;
 
 public class FileDetector {
