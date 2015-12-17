@@ -43,12 +43,12 @@ public class BugLocator {
 		Config.getInstance().setPaths(datasetDirPath, bugLogFilePath, intermediateDirPath, outputFilePath);
 		
 		String bugCorpusDirPath=Paths.get(intermediateDirPath, "bug").toString();
-		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
-		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
+//		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
+//		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
 		
 		String codeCorpusDirPath=Paths.get(intermediateDirPath, "code").toString();
-		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
-		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
+//		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
+//		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
 		
 		String bugVecFilePath=Paths.get(intermediateDirPath, "bugVec").toString();
 		String codeVecFilePath=Paths.get(intermediateDirPath, "codeVec").toString();

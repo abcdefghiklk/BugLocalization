@@ -19,9 +19,7 @@ public class VSMScore {
 		
 		//Load the vectors for bug and code vectors, under the same dictionary
 		HashMap<String, Matrix> bugVecList = MatrixUtil.loadVectors(bugVecFilePath, dicSize);
-		System.out.println(bugVecList.size());
 		HashMap<String, Matrix> codeVecList = MatrixUtil.loadVectors(codeVecFilePath, dicSize);
-		System.out.println(codeVecList.size());
 		
 		//Calculate and save the similarity between each code and each bug in the file
 		MatrixUtil.exportSimilarityMatrix(bugVecList, codeVecList, simMatFilePath, dicSize);

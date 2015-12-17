@@ -63,8 +63,10 @@ public class MatrixUtil {
 		int colCount=idMatPairs2.size();
 		Matrix simMat=new Matrix(rowCount, colCount);
 		Matrix []matList1=idMatPairs1.values().toArray(new Matrix[0]);
+		String []idArray1=idMatPairs1.keySet().toArray(new String[0]);
 		Matrix []matList2=idMatPairs2.values().toArray(new Matrix[0]);
 		for (int i=0; i<rowCount; i++){
+			System.out.println(idArray1[i]);
 			for (int j=0; j<colCount; j++){
 				simMat.set(i, j, computeCosSimilarity(matList1[i], matList2[j]));
 			}
@@ -154,17 +156,17 @@ public class MatrixUtil {
 	 * @param dstFilePath
 	 * @throws IOException
 	 */
-	public static void exportMatrix(Set<String> rowSet, Set<String> colSet, Matrix mat, String dstFilePath) throws IOException{
+	public static void exportMatrix(HashMap<String, Matrix> rowMap, HashMap<String, Matrix> colMap, Matrix mat, String dstFilePath) throws IOException{
 		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		//First line saves the row ids
-		for(String id: rowSet){
+		for(String id: rowMap.keySet()){
 			buf.append(id+"\t");
 		}
 		buf.append("\n");
 		
 		//Second line saves the column ids
-		for(String id: colSet){
+		for(String id: colMap.keySet()){
 			buf.append(id+"\t");
 		}
 		buf.append("\n");
@@ -189,7 +191,7 @@ public class MatrixUtil {
 	 */
 	public static void exportSimilarityMatrix(HashMap<String, Matrix> idMatPairs1, HashMap<String, Matrix> idMatPairs2, String dstFilePath, int dicSize) throws IOException{
 		Matrix simMat=computeSimilarityMatrix(idMatPairs1,idMatPairs2,dicSize);
-		exportMatrix(idMatPairs1.keySet(),idMatPairs2.keySet(),simMat,dstFilePath);
+		exportMatrix(idMatPairs1,idMatPairs2,simMat,dstFilePath);
 	}
 	
 	
@@ -340,18 +342,18 @@ public class MatrixUtil {
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		HashMap<String, Matrix> map1=new HashMap<String, Matrix>();
-		Matrix mat=new Matrix(1,3);
-		mat=Matrix.random(1, 3);
-		map1.put("A2", mat);
-		mat=Matrix.random(1, 3);
-		map1.put("A1", mat);
-		mat=Matrix.random(1, 3);
-		map1.put("A3", mat);
-		
-		for(String oneKey:map1.keySet().toArray(new String[0])){
-			System.out.println(oneKey);
-		}
+//		HashMap<String, Matrix> map1=new HashMap<String, Matrix>();
+//		Matrix mat=new Matrix(1,3);
+//		mat=Matrix.random(1, 3);
+//		map1.put("A2", mat);
+//		mat=Matrix.random(1, 3);
+//		map1.put("A1", mat);
+//		mat=Matrix.random(1, 3);
+//		map1.put("A3", mat);
+//		
+//		for(String oneKey:map1.keySet().toArray(new String[0])){
+//			System.out.println(oneKey);
+//		}
 //		HashMap<String, Matrix> map2=new HashMap<String, Matrix>();
 //		mat=Matrix.random(1, 3);
 //		mat.print(5, 2);
@@ -371,6 +373,7 @@ public class MatrixUtil {
 //		mat2.print(5, 2);
 //		double simVal=computeCosSimilarity(mat,mat2);
 //		System.out.println(simVal);
+		
 		
 	}
 
