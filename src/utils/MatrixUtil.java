@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import Jama.Matrix;
@@ -339,7 +340,38 @@ public class MatrixUtil {
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		Matrix mat=Matrix.random(0, 0);
+		HashMap<String, Matrix> map1=new HashMap<String, Matrix>();
+		Matrix mat=new Matrix(1,3);
+		mat=Matrix.random(1, 3);
+		map1.put("A2", mat);
+		mat=Matrix.random(1, 3);
+		map1.put("A1", mat);
+		mat=Matrix.random(1, 3);
+		map1.put("A3", mat);
+		
+		for(String oneKey:map1.keySet().toArray(new String[0])){
+			System.out.println(oneKey);
+		}
+//		HashMap<String, Matrix> map2=new HashMap<String, Matrix>();
+//		mat=Matrix.random(1, 3);
+//		mat.print(5, 2);
+//		map2.put("B2", mat);
+//		mat=Matrix.random(1, 3);
+//		mat.print(5, 2);
+//		map2.put("B1", mat);
+//		mat=Matrix.random(1, 3);
+//		mat.print(5, 2);
+//		map2.put("B3", mat);
+		
+//		Matrix simMat=computeSimilarityMatrix(map1, map2, 3);
+//		simMat.print(5, 2);
+//		Matrix mat=Matrix.random(1, 3);
+//		mat.print(5, 2);
+//		Matrix mat2=Matrix.random(1, 3);
+//		mat2.print(5, 2);
+//		double simVal=computeCosSimilarity(mat,mat2);
+//		System.out.println(simVal);
+		
 	}
 
 }

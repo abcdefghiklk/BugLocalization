@@ -44,8 +44,7 @@ public class BugLocator {
 		
 		String bugCorpusDirPath=Paths.get(intermediateDirPath, "bug").toString();
 		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
-		ArrayList<BugRecord> bugList=new ArrayList<BugRecord>();
-		BugDataProcessor.createBugCorpus(bugList);
+		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
 		
 		String codeCorpusDirPath=Paths.get(intermediateDirPath, "code").toString();
 		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
@@ -58,8 +57,10 @@ public class BugLocator {
 		String simMatFilePath=Paths.get(intermediateDirPath, "VSMScore").toString();
 		VSMScore.generate(bugVecFilePath, codeVecFilePath, simMatFilePath);
 		
+		String fixedFilePath=Paths.get(bugCorpusDirPath, "fixedFiles").toString();
 		TopK topK=new TopK(5);
-		topK.setOracle(BugFeatureExtractor.extractFixedFiles(bugList));
+		
+		topK.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
 		System.out.println(topK.evaluate(simMatFilePath));
 	}
 

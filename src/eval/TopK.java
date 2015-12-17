@@ -83,6 +83,7 @@ public class TopK extends Evaluation{
 		int numInTopK=0;
 		for(int i=0; i<scoreMat.getRowDimension(); i++){
 			String oneBugID=bugIDArray[i];
+			
 			TreeSet<String> fixedFileSet= oracles.get(oneBugID);
 			ArrayList<Integer> indexSet = super.getIndexSet(fixedFileSet, codeClassArray);
 			if(MatrixUtil.isInTopK(indexSet, i, scoreMat, getK())){

@@ -1,23 +1,10 @@
 package feature;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import config.Config;
-import sourcecode.CodeFeatureExtractor;
 import utils.MatrixUtil;
-import utils.WVToolWrapper;
-import edu.udo.cs.wvtool.main.WVTDocumentInfo;
-import edu.udo.cs.wvtool.main.WVTFileInputList;
-import edu.udo.cs.wvtool.wordlist.WVTWordList;
 import Jama.Matrix;
-import bug.BugFeatureExtractor;
 
 public class VSMScore {
 	/**
@@ -31,8 +18,10 @@ public class VSMScore {
 		int dicSize=Config.getInstance().getDicSize();
 		
 		//Load the vectors for bug and code vectors, under the same dictionary
-		HashMap<String, Matrix> bugVecList=MatrixUtil.loadVectors(bugVecFilePath, dicSize);
-		HashMap<String, Matrix> codeVecList=MatrixUtil.loadVectors(codeVecFilePath, dicSize);
+		HashMap<String, Matrix> bugVecList = MatrixUtil.loadVectors(bugVecFilePath, dicSize);
+		System.out.println(bugVecList.size());
+		HashMap<String, Matrix> codeVecList = MatrixUtil.loadVectors(codeVecFilePath, dicSize);
+		System.out.println(codeVecList.size());
 		
 		//Calculate and save the similarity between each code and each bug in the file
 		MatrixUtil.exportSimilarityMatrix(bugVecList, codeVecList, simMatFilePath, dicSize);
