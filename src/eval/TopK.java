@@ -73,7 +73,7 @@ public class TopK extends Evaluation{
 	 * as compared to the oracles
 	 * @throws Exception 
 	 */
-	double evaluate(String srcFilePath) throws Exception {
+	public double evaluate(String srcFilePath) throws Exception {
 		HashMap<String, TreeSet<String>> oracles=super.get();
 		ArrayList<String> bugIdList=new ArrayList<String>();
 		ArrayList<String> codeClassList=new ArrayList<String>();
@@ -96,25 +96,25 @@ public class TopK extends Evaluation{
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		//bug
-		String XMLFilePath="C:/Users/ql29/Documents/EClipse/Dataset/AspectJBugRepository.xml";
-		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/bugCorpus_aspectj";
-		ArrayList<BugRecord> bugList= BugDataProcessor.importFromXML();
-		BugDataProcessor.createBugCorpus(bugList, bugCorpusDirPath);
+//		String XMLFilePath="C:/Users/ql29/Documents/EClipse/Dataset/AspectJBugRepository.xml";
+//		String bugCorpusDirPath="C:/Users/ql29/Documents/EClipse/bugCorpus_aspectj";
+//		ArrayList<BugRecord> bugList= BugDataProcessor.importFromXML();
+//		BugDataProcessor.createBugCorpus(bugList, bugCorpusDirPath);
 		
-		//code
-		String codeDirPath="C:/Users/ql29/Documents/EClipse/Dataset/aspectj";
-		String codeCorpusDirPath="C:/Users/ql29/Documents/EClipse/codeCorpus_aspectj";
-		SourceCodeCorpus corpus=CodeDataProcessor.extractCodeData(codeDirPath, "java", 800);
-		CodeDataProcessor.exportCodeData(codeCorpusDirPath, corpus);
+//		//code
+//		String codeDirPath="C:/Users/ql29/Documents/EClipse/Dataset/aspectj";
+//		String codeCorpusDirPath="C:/Users/ql29/Documents/EClipse/codeCorpus_aspectj";
+//		SourceCodeCorpus corpus=CodeDataProcessor.extractCodeData(codeDirPath, "java", 800);
+//		CodeDataProcessor.exportCodeData(codeCorpusDirPath, corpus);
 		
 		
 //		vector and VSM similarities
-		String bugCorpusPath= Paths.get(bugCorpusDirPath,"information").toString();
-		String codeCorpusPath=Paths.get(codeCorpusDirPath,"codeContentCorpus").toString();
-		String bugVecFilePath= Paths.get(bugCorpusDirPath,"vectors").toString(); 
-		String codeVecFilePath= Paths.get(codeCorpusDirPath,"vectors").toString(); 
-		String simMatFilePath="C:/Users/ql29/Documents/EClipse/simScore_aspectj";
-		String oracleFilePath=Paths.get(bugCorpusDirPath,"fixedFiles").toString();
+//		String bugCorpusPath= Paths.get(bugCorpusDirPath,"information").toString();
+//		String codeCorpusPath=Paths.get(codeCorpusDirPath,"codeContentCorpus").toString();
+//		String bugVecFilePath= Paths.get(bugCorpusDirPath,"vectors").toString(); 
+//		String codeVecFilePath= Paths.get(codeCorpusDirPath,"vectors").toString(); 
+//		String simMatFilePath="C:/Users/ql29/Documents/EClipse/simScore_aspectj";
+//		String oracleFilePath=Paths.get(bugCorpusDirPath,"fixedFiles").toString();
 //		VSMScore.generate(bugCorpusPath, codeCorpusPath, bugVecFilePath, codeVecFilePath, simMatFilePath);
 //		TopK topK=new TopK(10);
 //		topK.setOracle(oracleFilePath);

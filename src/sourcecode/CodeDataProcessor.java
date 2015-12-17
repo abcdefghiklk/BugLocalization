@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import config.Config;
 import sourcecode.ast.FileParser;
 
 /**
@@ -22,7 +24,10 @@ public class CodeDataProcessor {
 	 * @return
 	 * @throws Exception
 	 */
-	public static SourceCodeCorpus extractCodeData(String srcDirPath, String fileType, int segmentationLength) throws Exception{
+	public static SourceCodeCorpus extractCodeData() throws Exception{
+		String srcDirPath=Config.getInstance().getDatasetDir();
+		String fileType=Config.getInstance().getFileType();
+		int segmentationLength=Config.getInstance().getSegmentationLength();
 		SourceCodeCorpus corpus=new SourceCodeCorpus(segmentationLength,fileType);
 		File srcDir =new File(srcDirPath);
 		if(!srcDir.isDirectory()){
@@ -76,6 +81,9 @@ public class CodeDataProcessor {
 			
 		}
 		
+		//set the original code file count
+		Config.getInstance().setFileCount(corpus.getSourceCodeList().size());
+		
 		//segment each source code file
 		corpus.segment();
 		
@@ -88,8 +96,9 @@ public class CodeDataProcessor {
 	 * @param corpus
 	 * @throws IOException 
 	 */
-	public static void exportCodeData(String dstDirPath, SourceCodeCorpus corpus) throws IOException{
+	public static void exportCodeData(SourceCodeCorpus corpus) throws IOException{
 		
+		String dstDirPath= Config.getInstance().getCodeCorpusDir();
 		//create a directory
 		File dstDir=new File(dstDirPath);
 		if(!dstDir.isDirectory()){
@@ -184,7 +193,8 @@ public class CodeDataProcessor {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static SourceCodeCorpus importCodeData(String srcDirPath) throws Exception{
+	public static SourceCodeCorpus importCodeData() throws Exception{
+		String srcDirPath= Config.getInstance().getCodeCorpusDir();
 		SourceCodeCorpus corpus=new SourceCodeCorpus();
 		File srcDir=new File(srcDirPath);
 		if(!srcDir.isDirectory()){
@@ -421,8 +431,6 @@ public class CodeDataProcessor {
 //		String srcDirPath="C:/Users/ql29/Documents/EClipse/Dataset/swt-3.1";
 		String dstDirPath=new String();
 //		String dstDirPath="C:/Users/ql29/Documents/EClipse/sourceCodeCorpus_new";
-		String fileType="java";
-		int segmentationLength=800;
 		while (i < args.length - 1) {
 			if (args[i].equals("-i")) {
 				i++;
@@ -433,12 +441,12 @@ public class CodeDataProcessor {
 			} else if (args[i].equals("-t")) {
 				i++;
 				if(args[i]!=null){
-					fileType=args[i+1];
+					Config.getInstance().setFileType(args[i+1]);	
 				}
 			} else if (args[i].equals("-l")){
 				i++;
 				if(args[i]!=null){
-					segmentationLength=Integer.parseInt(args[i]);
+					Config.getInstance().setSegmentationLength(Integer.parseInt(args[i]));
 				}
 			}
 			i++;
@@ -456,9 +464,10 @@ public class CodeDataProcessor {
 			showHelp();
 		}
 		else{
-			SourceCodeCorpus corpus=extractCodeData(srcDirPath,fileType,segmentationLength);
+			SourceCodeCorpus corpus=extractCodeData();
+			Config.getInstance().setPaths(srcDirPath, null, dstDirPath, null);
 			System.out.println("corpus extraction successful!");
-			exportCodeData(dstDirPath,corpus);
+			exportCodeData(corpus);
 			System.out.println("corpus successfully exported!");
 		}
 	}
@@ -470,29 +479,6 @@ public class CodeDataProcessor {
 		else{
 			parseArgs(args);
 		}
-//	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-//		String srcDirPath="C:/Users/ql29/Documents/EClipse/Dataset/swt-3.1";
-//		SourceCodeCorpus corpus=extractCodeData(srcDirPath,"java",800);
-//		for(SourceCode oneFile:corpus.getSourceCodeList()){
-//			System.out.println(oneFile.getFilePath());
-//		}
-//		String srcDirPath="C:/Users/ql29/Documents/EClipse/sourceCodeCorpus";
-//		SourceCodeCorpus corpus=importCodeData(srcDirPath);
-//		for(SourceCode oneFile:corpus.getSourceCodeList()){
-//			System.out.println(oneFile.getFullClassName());
-//		}
-//		String dstDirPath="C:/Users/ql29/Documents/EClipse/sourceCodeCorpus_new";
-//		exportCodeData(dstDirPath,corpus);
-//		ArrayList<String> javaFileList=new ArrayList<String>();
-//		detectAllFiles(srcDirPath,"java",javaFileList);
-//		String []files= javaFileList.toArray(new String[0]);
-//		FileParser parser=new FileParser(files[0]);
-//		String packageName= parser.getPackageName();
-//		System.out.println(packageName);
-//		System.out.println(files[0]);
-//		FileDetector detector=new FileDetector("java");
-//		System.out.println(detector.detect(srcDirPath).length);
 	}
 
 }

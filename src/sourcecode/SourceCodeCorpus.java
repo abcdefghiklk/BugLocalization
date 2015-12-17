@@ -2,6 +2,8 @@ package sourcecode;
 
 import java.util.ArrayList;
 
+import config.Config;
+
 /**
  * Source Code Corpus is the class 
  * for the whole set of source code files 
@@ -135,22 +137,25 @@ public class SourceCodeCorpus {
 		if(this._segmentationLength==0){
 			return;
 		}
+		int totalSegmentCount=0;
 		for(SourceCode oneCodeFile: this._sourceCodeList){
 			String fileContent= oneCodeFile.getContent();
 			String []fileTerms= fileContent.split(" ");
 			if(fileTerms.length==0){
 				return;
 			}
-			for(int segmentCount=0; segmentCount*this._segmentationLength<fileTerms.length; segmentCount++){
-				int startIndex=segmentCount*this._segmentationLength;
+			for(int segmentCount=0; segmentCount* this._segmentationLength<fileTerms.length; segmentCount++){
+				int startIndex=segmentCount* this._segmentationLength;
 				int endIndex=Math.min((segmentCount+1)* _segmentationLength, fileTerms.length);
 				String segmentString=new String();
 				for(int i=startIndex; i<endIndex;i++){
 					segmentString+=fileTerms[i]+" ";
 				}
+				totalSegmentCount++;
 				oneCodeFile.addCodeSegment(segmentString.trim());
 			}
 		}
+		Config.getInstance().setSegmentCount(totalSegmentCount);
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

@@ -93,79 +93,68 @@ public class BugDataProcessor {
 				}
 			}
 		}
-//		Config.getInstance().s
+		Config.getInstance().setBugReportCount(bugList.size());
 		return bugList;
 	}
 	/**
 	 * Export the list of bugs to XML file
 	 * @param bugList
 	 * @param XMLFilePath
+	 * @throws Exception 
 	 */
-	static public void exportToXML(ArrayList<BugRecord> bugList, String XMLFilePath){
-		DocumentBuilderFactory domFactory = DocumentBuilderFactory
-				.newInstance();
-		try {
-			DocumentBuilder domBuilder= domFactory.newDocumentBuilder();
-			Document doc=domBuilder.newDocument();
-			Element rootNode=doc.createElement("bugrepository");
-			doc.appendChild(rootNode);
-			for(BugRecord _bug:bugList){
-				Element _bugNode=doc.createElement("bug");
-				_bugNode.setAttribute("id", _bug.getBugId());
-				SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-				_bugNode.setAttribute("opendate", format.format(_bug.getOpenDate()));
-				_bugNode.setAttribute("fixdate", format.format(_bug.getFixDate()));
+	static public void exportToXML(ArrayList<BugRecord> bugList, String XMLFilePath) throws Exception{
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder domBuilder= domFactory.newDocumentBuilder();
+		Document doc=domBuilder.newDocument();
+		Element rootNode=doc.createElement("bugrepository");
+		doc.appendChild(rootNode);
+		for(BugRecord _bug:bugList){
+			Element _bugNode=doc.createElement("bug");
+			_bugNode.setAttribute("id", _bug.getBugId());
+			_bugNode.setAttribute("opendate", DateFormat.getFormat().format(_bug.getOpenDate()));
+			_bugNode.setAttribute("fixdate", DateFormat.getFormat().format(_bug.getFixDate()));
 				
-				Element _bugInformationNode=doc.createElement("buginformation");
+			Element _bugInformationNode=doc.createElement("buginformation");
 				
-				Element _summaryNode=doc.createElement("summary");
-				_summaryNode.appendChild(doc.createTextNode(_bug.getBugSummary()));
-				_bugInformationNode.appendChild(_summaryNode);
+			Element _summaryNode=doc.createElement("summary");
+			_summaryNode.appendChild(doc.createTextNode(_bug.getBugSummary()));
+			_bugInformationNode.appendChild(_summaryNode);
 				
-				Element _descriptionNode=doc.createElement("description");
-				_descriptionNode.appendChild(doc.createTextNode(_bug.getBugDescription()));
-				_bugInformationNode.appendChild(_descriptionNode);
+			Element _descriptionNode=doc.createElement("description");
+			_descriptionNode.appendChild(doc.createTextNode(_bug.getBugDescription()));
+			_bugInformationNode.appendChild(_descriptionNode);
 				
 				
-				_bugNode.appendChild(_bugInformationNode);
+			_bugNode.appendChild(_bugInformationNode);
 				
-				Element _fixedFilesNode=doc.createElement("fixedFiles");
+			Element _fixedFilesNode=doc.createElement("fixedFiles");
 				
-				for(String oneFixedFileName: _bug.getFixedFileSet()){
-					Element _oneFixedFileNode=doc.createElement("file");
-					_oneFixedFileNode.appendChild(doc.createTextNode(oneFixedFileName));
-					_fixedFilesNode.appendChild(_oneFixedFileNode);
-				}
-				_bugNode.appendChild(_fixedFilesNode);
+			for(String oneFixedFileName: _bug.getFixedFileSet()){
+				Element _oneFixedFileNode=doc.createElement("file");
+				_oneFixedFileNode.appendChild(doc.createTextNode(oneFixedFileName));
+				_fixedFilesNode.appendChild(_oneFixedFileNode);
+			}
+			_bugNode.appendChild(_fixedFilesNode);
 				
-				rootNode.appendChild(_bugNode);
+			rootNode.appendChild(_bugNode);
 				
-			}		
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer;
-			transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(XMLFilePath));
-			transformer.transform(source, result);
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+		}		
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer;
+		transformer = transformerFactory.newTransformer();
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(new File(XMLFilePath));
+		transformer.transform(source, result);
+	} 
+	
 	/**
 	 * Create Bug Corpus
 	 * @param bugList
 	 * @param corpusDir
 	 * @throws IOException 
 	 */
-	static public void createBugCorpus(ArrayList<BugRecord> bugList, String corpusDirPath) throws IOException{
+	static public void createBugCorpus(ArrayList<BugRecord> bugList) throws IOException{
+		String corpusDirPath= Config.getInstance().getBugCorpusDir();
 		File corpusDir=new File(corpusDirPath);
 		if(!corpusDir.exists()){
 			corpusDir.mkdir();
@@ -301,14 +290,6 @@ public class BugDataProcessor {
 		return res.toString();
 	}
 	
-	
-	
-	
-	
-
-	
-	
-	
 	private static void showHelp() {
 		String usage = "Usage:java -jar BugCorpusCreater [-options] \r\n\r\nwhere options must include:\r\n"
 				+ "-f	indicates the absolute path of the .xml log file\r\n"
@@ -332,8 +313,6 @@ public class BugDataProcessor {
 			}
 			i++;
 		}
-		System.out.println(inputXMLFilePath);
-		System.out.println(bugCorpusPath);
 		boolean isLegal=true;
 		if (!new File(inputXMLFilePath).isFile() ){
 			isLegal=false;
@@ -347,9 +326,10 @@ public class BugDataProcessor {
 			showHelp();
 		}
 		else{
+			Config.getInstance().setPaths(new String(), inputXMLFilePath, new String(), bugCorpusPath);
 			ArrayList<BugRecord> bugList=new ArrayList<BugRecord>();
 			bugList=importFromXML();
-			BugDataProcessor.createBugCorpus(bugList, bugCorpusPath);
+			BugDataProcessor.createBugCorpus(bugList);
 		}
 	}
 	

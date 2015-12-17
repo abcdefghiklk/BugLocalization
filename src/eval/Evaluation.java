@@ -66,6 +66,6 @@ abstract public class Evaluation {
 		}
 		return indexSet;
 	}
-	abstract double evaluate(String srcFilePath) throws Exception; 
+	abstract public double evaluate(String srcFilePath) throws Exception; 
 
 }

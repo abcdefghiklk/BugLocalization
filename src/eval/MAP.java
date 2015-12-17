@@ -34,7 +34,7 @@ public class MAP extends Evaluation{
 	 * Obtain the performance under the MAP metric
 	 * @throws Exception 
 	 */
-	double evaluate(String srcFilePath) throws Exception {
+	public double evaluate(String srcFilePath) throws Exception {
 		HashMap<String, TreeSet<String>> oracles=super.get();
 		ArrayList<String> bugIdList=new ArrayList<String>();
 		ArrayList<String> codeClassList=new ArrayList<String>();

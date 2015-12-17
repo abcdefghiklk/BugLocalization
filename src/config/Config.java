@@ -23,8 +23,6 @@ public class Config {
 	
 	private int _bugReportCount; //The number of bug reports/bugs
 	
-	private int _bugTermCount; //The number of terms for bugs
-	
 	//configuration for codes
 	private String _codeCorpusDir; //The code corpus directory path
 	
@@ -32,11 +30,9 @@ public class Config {
 	
 	private int _segmentationLength; //The segmentation length
 	
-	private int _fileCount; //The number of files after segmentation by length of 800
+	private int _segmentCount; //The number of segments after segmentation
 	
-	private int _originalfilecount; //The number of original files(before segmentation)
-	
-	private int _codeTermCount; //The number of terms for codes
+	private int _fileCount; //The number of original files(before segmentation)
 
 	//features
 	private String _featuresDir; //The directory path for features
@@ -83,13 +79,11 @@ public class Config {
 		
 		this._bugCorpusDir=new String();
 		this._bugReportCount=0;
-		this._bugTermCount=0;
 		
 		this._codeCorpusDir=new String();
+		this._segmentCount=0;
 		this._fileCount=0;
-		this._originalfilecount=0;
-		this._codeTermCount=0;
-		
+
 		this._featuresDir=new String();
 		this._dicSize=0;
 		this._minCutoffFrequency=0;
@@ -139,6 +133,14 @@ public class Config {
 	}
 	
 	/**
+	 * Set the bug report count
+	 * @param bugReportCount
+	 */
+	public void setBugReportCount(int bugReportCount){
+		this._bugReportCount=bugReportCount;
+	}
+	
+	/**
 	 * Set the code corpus directory
 	 * @param codeCorpusDir
 	 */
@@ -154,6 +156,29 @@ public class Config {
 		this._fileType=fileType;
 	}
 	
+	/**
+	 * Set the segmentation length
+	 * @param segmentationLength
+	 */
+	public void setSegmentationLength(int segmentationLength){
+		this._segmentationLength=segmentationLength;
+	}
+	
+	/**
+	 * Set source code file count
+	 * @param count
+	 */
+	public void setFileCount(int count){
+		this._fileCount=count;
+	}
+	
+	/**
+	 * Set the segment count
+	 * @param count
+	 */
+	public void setSegmentCount(int count){
+		this._segmentCount=count;
+	}
 	
 	/**
 	 * Set the dictionary size
@@ -240,6 +265,20 @@ public class Config {
 	}
 	
 	/**
+	 * Get the source code file type
+	 */
+	public String getFileType(){
+		return(this._fileType);
+	}
+	
+	/**
+	 * Get the segmentation length
+	 * @return
+	 */
+	public int getSegmentationLength(){
+		return(this._segmentationLength);
+	}
+	/**
 	 * Get the features directory path
 	 * @return
 	 */
@@ -278,14 +317,12 @@ public class Config {
 		
 		pro.setProperty("bugCorpusDir", this._bugCorpusDir);
 		pro.setProperty("bugReportCount", String.valueOf(this._bugReportCount));
-		pro.setProperty("bugTermCount", String.valueOf(this._bugTermCount));
 		
 		pro.setProperty("codeCorpusDir", this._codeCorpusDir);
 		pro.setProperty("fileType", this._fileType);
 		pro.setProperty("segmentationLength", String.valueOf(this._segmentationLength));
 		pro.setProperty("fileCount", String.valueOf(this._fileCount));
-		pro.setProperty("originalFileCount", String.valueOf(this._originalfilecount));
-		pro.setProperty("codeTermCount", String.valueOf(this._codeTermCount));
+		pro.setProperty("segmentCount", String.valueOf(this._segmentCount));
 		
 		pro.setProperty("featuresDir", this._featuresDir);
 		pro.setProperty("dicSize", String.valueOf(this._dicSize));
@@ -328,9 +365,6 @@ public class Config {
 		if(pro.containsKey("bugReportCount")){
 			this._bugReportCount=Integer.parseInt(pro.getProperty("bugReportCount"));
 		}
-		if(pro.containsKey("bugTermCount")){
-			this._bugTermCount=Integer.parseInt(pro.getProperty("bugTermCount"));
-		}
 		if(pro.containsKey("fileType")){
 			this._fileType=pro.getProperty("fileType");
 		}
@@ -340,11 +374,8 @@ public class Config {
 		if(pro.containsKey("fileCount")){
 			this._fileCount=Integer.parseInt(pro.getProperty("fileCount"));
 		}
-		if(pro.containsKey("originalFileCount")){
-			this._originalfilecount=Integer.parseInt(pro.getProperty("originalFileCount"));
-		}
-		if(pro.containsKey("codeTermCount")){
-			this._codeTermCount=Integer.parseInt(pro.getProperty("codeTermCount"));
+		if(pro.containsKey("segmentCount")){
+			this._segmentCount=Integer.parseInt(pro.getProperty("segmentCount"));
 		}
 		if(pro.containsKey("dicSize")){
 			this._dicSize=Integer.parseInt(pro.getProperty("dicSize"));
