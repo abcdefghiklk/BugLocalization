@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 import config.Config;
 import utils.DateFormat;
 import utils.Splitter;
+import utils.Stem;
 import utils.Stopword;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -209,7 +210,8 @@ public class BugDataProcessor {
 			
 			//create bug summary corpus and part of information corpus
 			for (String word : bugSummaryWords) {
-				word = word.toLowerCase();
+				word = Stem.stem(word.toLowerCase());
+//				word = word.toLowerCase();
 				if (!Stopword.isEnglishStopword(word)) {
 					summaryBuffer.append(word + " ");
 					informationBuffer.append(word + " ");
@@ -218,7 +220,8 @@ public class BugDataProcessor {
 			
 			//create bug description corpus and part of information corpus
 			for (String word : bugDescriptionWords) {
-				word = word.toLowerCase();
+				word = Stem.stem(word.toLowerCase());
+//				word = word.toLowerCase();
 				if (!Stopword.isEnglishStopword(word)) {
 					descriptionBuffer.append(word + " ");
 					informationBuffer.append(word + " ");

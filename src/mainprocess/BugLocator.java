@@ -17,10 +17,11 @@ public class BugLocator {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		String configFilePath="C:/Users/ql29/Documents/EClipse/property";
-		String datasetsDirPath="C:/Users/ql29/Documents/Eclipse/Dataset";
-		String intermediateDirPath="C:/Users/ql29/Documents/Eclipse/Corpus";
-		String outputFilePath="C:/Users/ql29/Documents/Eclipse/output";
+		String rootDirPath="C:/Users/dell/Documents/EClipse";
+		String configFilePath=Paths.get(rootDirPath, "property").toString();
+		String datasetsDirPath=Paths.get(rootDirPath,"Dataset").toString();
+		String intermediateDirPath=Paths.get(rootDirPath, "Corpus").toString();
+		String outputFilePath=Paths.get(rootDirPath, "output").toString();
 		String projectName="swt";
 		String datasetDirPath;
 		String bugLogFilePath;
@@ -43,12 +44,12 @@ public class BugLocator {
 		Config.getInstance().setPaths(datasetDirPath, bugLogFilePath, intermediateDirPath, outputFilePath);
 		
 		String bugCorpusDirPath=Paths.get(intermediateDirPath, "bug").toString();
-//		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
-//		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
+		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
+		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
 		
 		String codeCorpusDirPath=Paths.get(intermediateDirPath, "code").toString();
-//		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
-//		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
+		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
+		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
 		
 		String bugVecFilePath=Paths.get(intermediateDirPath, "bugVec").toString();
 		String codeVecFilePath=Paths.get(intermediateDirPath, "codeVec").toString();

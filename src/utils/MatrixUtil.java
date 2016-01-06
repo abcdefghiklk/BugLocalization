@@ -66,7 +66,6 @@ public class MatrixUtil {
 		String []idArray1=idMatPairs1.keySet().toArray(new String[0]);
 		Matrix []matList2=idMatPairs2.values().toArray(new Matrix[0]);
 		for (int i=0; i<rowCount; i++){
-			System.out.println(idArray1[i]);
 			for (int j=0; j<colCount; j++){
 				simMat.set(i, j, computeCosSimilarity(matList1[i], matList2[j]));
 			}

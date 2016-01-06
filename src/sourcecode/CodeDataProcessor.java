@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 import config.Config;
 import sourcecode.ast.FileParser;
+import utils.Stem;
+import utils.Stopword;
 
 /**
  * I/O for source code data
@@ -58,7 +60,10 @@ public class CodeDataProcessor {
 			String []terms= parser.getContent();
 			String fileContent=new String();
 			for(String term:terms){
-				fileContent+=term+" ";
+				String stemmedTerm = Stem.stem(term.toLowerCase());
+				if(!(Stopword.isKeyword(term) || Stopword.isEnglishStopword(term))){
+					fileContent+=stemmedTerm+" ";
+				}
 			}
 			oneCodeFile.setContent(fileContent);
 			
