@@ -3,9 +3,13 @@ package utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import edu.udo.cs.wvtool.config.WVTConfigException;
 import edu.udo.cs.wvtool.config.WVTConfiguration;
 import edu.udo.cs.wvtool.config.WVTConfigurationFact;
+import edu.udo.cs.wvtool.config.WVTConfigurationRule;
 import edu.udo.cs.wvtool.generic.output.WordVectorWriter;
+import edu.udo.cs.wvtool.generic.stemmer.LovinsStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.PorterStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.WVTStemmer;
 import edu.udo.cs.wvtool.generic.vectorcreation.TFIDF;
@@ -55,8 +59,19 @@ public class WVToolWrapper {
 	public static WVTWordList extractCorpusDic(WVTFileInputList list) throws Exception{
 		WVTool wvt = new WVTool(false);
 		WVTConfiguration config = new WVTConfiguration();
-		WVTStemmer stemmer = new PorterStemmerWrapper();
-		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER, new WVTConfigurationFact(stemmer));
+		final WVTStemmer porterStemmer = new PorterStemmerWrapper();
+		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER,
+				new WVTConfigurationRule() {
+					public Object getMatchingComponent(WVTDocumentInfo d)
+							throws WVTConfigException {
+						return porterStemmer;
+					}
+				});
+		WVTStemmer stemmer = new LovinsStemmerWrapper();
+		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER,
+				new WVTConfigurationFact(stemmer));
+//		WVTStemmer stemmer = new PorterStemmerWrapper();
+//		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER, new WVTConfigurationFact(stemmer));
 		WVTWordList dictionary = wvt.createWordList(list, config);
 		return dictionary;
 	}
@@ -80,6 +95,9 @@ public class WVToolWrapper {
 	 */
 	public static void generateVectors(String dstFilePath, WVTFileInputList list, WVTWordList dictionary) throws Exception{
 		WVTool wvt= new WVTool(false);
+		if(!new File(dstFilePath).isFile()){
+			new File(dstFilePath).createNewFile();
+		}
 		WordVectorWriter wvw= new WordVectorWriter(new FileWriter(dstFilePath),true);
 		WVTConfiguration config = new WVTConfiguration();
 		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw));
