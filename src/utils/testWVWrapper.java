@@ -14,6 +14,7 @@ import edu.udo.cs.wvtool.generic.stemmer.WVTStemmer;
 import edu.udo.cs.wvtool.generic.vectorcreation.TFIDF;
 import edu.udo.cs.wvtool.main.WVTDocumentInfo;
 import edu.udo.cs.wvtool.main.WVTFileInputList;
+import edu.udo.cs.wvtool.main.WVTWordVector;
 import edu.udo.cs.wvtool.main.WVTool;
 import edu.udo.cs.wvtool.util.WVToolException;
 import edu.udo.cs.wvtool.wordlist.WVTWordList;
@@ -23,12 +24,28 @@ public class testWVWrapper {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		String corpusDirPath="C:/Users/dell/Documents/EClipse/testFolder";
-		String vocabularyPath="C:/Users/dell/Documents/EClipse/vocabulary";
-		String dstFilePath="C:/Users/dell/Documents/EClipse/vectors";
-		WVTFileInputList list = WVToolWrapper.extractCorpusFileList(corpusDirPath);
+		String corpusDirPath2="C:/Users/dell/Documents/EClipse/testFolder2";
+		String []dirs={corpusDirPath,corpusDirPath2};
+		String vocabularyPath="C:/Users/dell/Documents/EClipse/vocabulary1";
+		String dstFilePath="C:/Users/dell/Documents/EClipse/vectors1";
+		String dstFilePath2="C:/Users/dell/Documents/EClipse/vectors2";
+		WVTFileInputList list = WVToolWrapper.extractCorpusFileList(dirs);
+		WVTFileInputList list2 = WVToolWrapper.extractCorpusFileList(corpusDirPath);
+		WVTool wvt = new WVTool(false);
 		
+		WVTWordList dic=WVToolWrapper.extractCorpusDic(list2);
+		WVTWordVector q = wvt.createVector("desperate beast company desperate beast company", dic); 
+		for(double value:q.getValues()){
+			System.out.println(value);
+		}
+//		for(int docF:dic.getDocumentFrequencies()){
+//			System.out.println(docF);
+//		}
+//		for(int i=0;i<dic.getNumWords();i++){
+//			System.out.println(dic.getWord(i));
+//		}
 		
-		WVTWordList dic=WVToolWrapper.extractCorpusDic(list);		
+		System.out.println(dic.getTermCountForCurrentDocument());
 //		WVTool wvt = new WVTool(false);
 //		WVTConfiguration config = new WVTConfiguration();
 //		final WVTStemmer porterStemmer = new PorterStemmerWrapper();
@@ -55,6 +72,7 @@ public class testWVWrapper {
 //		wvt.createVectors(list, config, dic);
 //		wvw.close();
 		WVToolWrapper.generateVectors(dstFilePath, list, dic);
+		WVToolWrapper.generateVectors(dstFilePath2, list2, dic);
 	}
 
 }

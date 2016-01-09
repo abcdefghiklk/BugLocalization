@@ -272,6 +272,7 @@ public class MatrixUtil {
 			for(int j=0; j<strs.length;j++){
 				simMat.set(i, j, Double.parseDouble(strs[j]));
 			}
+			i++;
 		}
 		reader.close();
 		return simMat;

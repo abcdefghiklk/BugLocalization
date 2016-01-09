@@ -9,6 +9,8 @@ import bug.BugDataProcessor;
 import bug.BugFeatureExtractor;
 import bug.BugRecord;
 import config.Config;
+import eval.MAP;
+import eval.MRR;
 import eval.TopK;
 import feature.VSMScore;
 import feature.VectorCreator;
@@ -45,24 +47,32 @@ public class BugLocator {
 		
 		String bugCorpusDirPath=Paths.get(intermediateDirPath, "bug").toString();
 		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
-		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
+//		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
 		
 		String codeCorpusDirPath=Paths.get(intermediateDirPath, "code").toString();
 		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
-		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
+//		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
 		
 		String bugVecFilePath=Paths.get(intermediateDirPath, "bugVec").toString();
 		String codeVecFilePath=Paths.get(intermediateDirPath, "codeVec").toString();
-		VectorCreator.create(Paths.get(bugCorpusDirPath,"information").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath);
+//		VectorCreator.create(Paths.get(bugCorpusDirPath,"information").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath);
 		
 		String simMatFilePath=Paths.get(intermediateDirPath, "VSMScore").toString();
-		VSMScore.generate(bugVecFilePath, codeVecFilePath, simMatFilePath);
+//		VSMScore.generate(bugVecFilePath, codeVecFilePath, simMatFilePath);
 		
 		String fixedFilePath=Paths.get(bugCorpusDirPath, "fixedFiles").toString();
 		TopK topK=new TopK(5);
-		
 		topK.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
+		
+		MRR mrr=new MRR();
+		mrr.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
+		
+		MAP map=new MAP();
+		map.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
+		
+		System.out.println(map.evaluate(simMatFilePath));
 		System.out.println(topK.evaluate(simMatFilePath));
+		System.out.println(mrr.evaluate(simMatFilePath));
 	}
 
 }

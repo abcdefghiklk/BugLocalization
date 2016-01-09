@@ -59,7 +59,7 @@ public class MAP extends Evaluation{
 			//The ranks are in ascending order
 			SortedSet<Integer> rankSet = new TreeSet<Integer>();
 			for(int index:indexSet){
-				int rank=MatrixUtil.getRank(index,i,scoreMat);
+				int rank=MatrixUtil.getRank(i,index,scoreMat);
 				rankSet.add(rank);
 			}
 			

@@ -56,7 +56,7 @@ public class MRR extends Evaluation{
 			//obtain the RR value, which is 1/rank_1
 			SortedSet<Integer> rankSet = new TreeSet<Integer>();
 			for(int index:indexSet){
-				int rank=MatrixUtil.getRank(index,i,scoreMat);
+				int rank=MatrixUtil.getRank(i,index,scoreMat);
 				rankSet.add(rank);
 			}
 			MRRValue+=1/(rankSet.first()+0.0);
