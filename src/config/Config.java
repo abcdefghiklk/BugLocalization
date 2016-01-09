@@ -304,6 +304,37 @@ public class Config {
 	}
 	
 	/**
+	 * Get whether MAP is used
+	 * @return
+	 */
+	public boolean getMAPUsed(){
+		return(this._MAPUsed);
+	}
+	
+	/**
+	 * Get whether topK is used
+	 * @return
+	 */
+	public boolean getTopKUsed(){
+		return(this._topKUsed);
+	}
+	
+	/**
+	 * Get k
+	 * @return
+	 */
+	public int getK(){
+		return(this._k);
+	}
+	
+	/**
+	 * Get whether MRR is used
+	 * @return
+	 */
+	public boolean getMRRUsed(){
+		return(this._MRRUsed);
+	}
+	/**
 	 * Export the configurations to a file
 	 * @param configFilePath
 	 * @throws IOException

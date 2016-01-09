@@ -1,10 +1,14 @@
 package eval;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import config.Config;
+import utils.FileUtils;
 import utils.MatrixUtil;
 import Jama.Matrix;
 
@@ -35,6 +39,11 @@ public class MRR extends Evaluation{
 	 * @throws Exception 
 	 */
 	public double evaluate(String srcFilePath) throws Exception {
+		String evalDirPath=Config.getInstance().getEvaluationDir();
+		String evalFilePath=Paths.get(evalDirPath, "mrr").toString();
+		if(new File(evalFilePath).isFile()){
+			new File(evalFilePath).delete();
+		}
 		HashMap<String, TreeSet<String>> oracles=super.get();
 		ArrayList<String> bugIdList=new ArrayList<String>();
 		ArrayList<String> codeClassList=new ArrayList<String>();
@@ -60,6 +69,7 @@ public class MRR extends Evaluation{
 				rankSet.add(rank);
 			}
 			MRRValue+=1/(rankSet.first()+0.0);
+			FileUtils.write_append2file(oneBugID+"\t"+1/(rankSet.first()+0.0)+"\n",evalFilePath);
 		}
 		
 		// TODO Auto-generated method stub

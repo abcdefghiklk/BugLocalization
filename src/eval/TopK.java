@@ -1,16 +1,19 @@
 package eval;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import config.Config;
 import feature.VSMScore;
 import bug.BugDataProcessor;
 import bug.BugRecord;
 import Jama.Matrix;
 import sourcecode.CodeDataProcessor;
 import sourcecode.SourceCodeCorpus;
+import utils.FileUtils;
 import utils.MatrixUtil;
 
 public class TopK extends Evaluation{
@@ -74,6 +77,11 @@ public class TopK extends Evaluation{
 	 * @throws Exception 
 	 */
 	public double evaluate(String srcFilePath) throws Exception {
+		String evalDirPath=Config.getInstance().getEvaluationDir();
+		String evalFilePath=Paths.get(evalDirPath, "topk").toString();
+		if(new File(evalFilePath).isFile()){
+			new File(evalFilePath).delete();
+		}
 		HashMap<String, TreeSet<String>> oracles=super.get();
 		ArrayList<String> bugIdList=new ArrayList<String>();
 		ArrayList<String> codeClassList=new ArrayList<String>();
@@ -88,6 +96,7 @@ public class TopK extends Evaluation{
 			ArrayList<Integer> indexSet = super.getIndexSet(fixedFileSet, codeClassArray);
 			if(MatrixUtil.isInTopK(indexSet, i, scoreMat, getK())){
 				numInTopK++;
+				FileUtils.write_append2file(oneBugID+"\n", evalFilePath);
 			}
 		}
 		// TODO Auto-generated method stub

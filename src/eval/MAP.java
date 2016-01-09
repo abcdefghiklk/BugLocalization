@@ -1,10 +1,14 @@
 package eval;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import config.Config;
+import utils.FileUtils;
 import utils.MatrixUtil;
 import Jama.Matrix;
 
@@ -35,6 +39,11 @@ public class MAP extends Evaluation{
 	 * @throws Exception 
 	 */
 	public double evaluate(String srcFilePath) throws Exception {
+		String evalDirPath=Config.getInstance().getEvaluationDir();
+		String evalFilePath=Paths.get(evalDirPath, "map").toString();
+		if(new File(evalFilePath).isFile()){
+			new File(evalFilePath).delete();
+		}
 		HashMap<String, TreeSet<String>> oracles=super.get();
 		ArrayList<String> bugIdList=new ArrayList<String>();
 		ArrayList<String> codeClassList=new ArrayList<String>();
@@ -72,7 +81,7 @@ public class MAP extends Evaluation{
 				precision+=(oracleCount+0.0d)/(rank+0.0d);
 			}
 			sumPrecision+=precision/(oracleCount+0.0d);
-			
+			FileUtils.write_append2file(oneBugID+"\t"+precision+"\n", evalFilePath);
 		}
 		// TODO Auto-generated method stub
 		
