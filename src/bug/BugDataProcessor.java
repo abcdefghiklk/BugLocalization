@@ -181,18 +181,30 @@ public class BugDataProcessor {
 		
 		//bug open dates file
 		String openDateFilePath = Paths.get(corpusDirPath, "openDate").toString();
+		if(new File(openDateFilePath).isFile()){
+			new File(openDateFilePath).delete();
+		}
 		FileWriter openDateWriter = new FileWriter(openDateFilePath,true);
 		
 		//bug fix dates file
 		String fixDateFilePath = Paths.get(corpusDirPath, "fixDate").toString();
+		if(new File(fixDateFilePath).isFile()){
+			new File(fixDateFilePath).delete();
+		}
 		FileWriter fixDateWriter=new FileWriter(fixDateFilePath,true);
 		
 		//the file containing fixed classes(files) for a bug
 		String fixedClassesFilePath = Paths.get(corpusDirPath, "fixedFiles").toString();
+		if(new File(fixedClassesFilePath).isFile()){
+			new File(fixedClassesFilePath).delete();
+		}
 		FileWriter fixedClassesWriter=new FileWriter(fixedClassesFilePath,true);
 		
 		//the file containing mentioned classes(files) in description
 		String classesInDescriptionFilePath = Paths.get(corpusDirPath, "filenamesInDescription").toString();
+		if(new File(classesInDescriptionFilePath).isFile()){
+			new File(classesInDescriptionFilePath).delete();
+		}
 		FileWriter classesInDescriptionWriter = new FileWriter(classesInDescriptionFilePath,true);
 		
 		//for every bug, create its corpus for the summary part, description part, and summary & description part

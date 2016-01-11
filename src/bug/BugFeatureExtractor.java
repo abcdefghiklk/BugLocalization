@@ -645,7 +645,7 @@ public class BugFeatureExtractor {
 		HashMap<String, Integer> pairs=new HashMap<String, Integer>();
 		Date date=new Date();
 		for(BugRecord _bug:bugList){
-			if(_bug.getBugId()==bugID){
+			if(_bug.getBugId().equals(bugID)){
 				date=_bug.getFixDate();
 				break;
 			}
@@ -657,11 +657,14 @@ public class BugFeatureExtractor {
 		
 		//find the past bug reports
 		for(BugRecord _bug:bugList){
-			if(_bug.getFixDate().compareTo(date)<0){
+//			System.out.println("date1:"+DateFormat.getFormat().format(date)+"\t"+"date2:"+DateFormat.getFormat().format(_bug.getFixDate()));
+			if(_bug.getFixDate().compareTo(date)>0){
+//				System.out.println("date1 is earlier than date 2!");
 				//find the bug reports containing the source code file
 				for(String oneFixedFile:_bug.getFixedFileSet()){
 					if(oneFixedFile.contains(fileClassName)){
 						pairs.put(_bug.getBugId(),_bug.getFixedFileSet().size());
+						break;
 					}
 				}
 			}

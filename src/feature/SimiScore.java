@@ -26,14 +26,18 @@ public class SimiScore {
 		String []codeClassArray=codeVecList.keySet().toArray(new String[0]);
 		Matrix simMat = MatrixUtil.computeSimilarityMatrix(bugVecList, Config.getInstance().getDicSize());
 		Matrix scoreMat=new Matrix(bugVecList.size(),codeVecList.size());
+		boolean flag=false;
 		for(int i=0;i<bugVecList.size();i++){
 			for(int j=0;j<codeVecList.size();j++){
 				HashMap<String,Integer> idNumPairs=BugFeatureExtractor.getPastBugsContainingTargetFile(codeClassArray[j], bugIDArray[i], bugList);			
-//				if(idNumPairs.size()!=0){
-//					for (Entry<String, Integer> pair:idNumPairs.entrySet()){
-//						System.out.println(pair.getKey()+"\t"+pair.getValue());	
-//					}
-//				}
+				if(idNumPairs.size()>5 && !flag){
+					System.out.println(codeClassArray[j]);
+					System.out.println(bugIDArray[i]);
+					for (Entry<String, Integer> pair:idNumPairs.entrySet()){
+						System.out.println(pair.getKey()+"\t"+pair.getValue());	
+					}
+					flag=true;
+				}
 				double simiScore=0.0d;
 				for(Entry<String, Integer> onePair:idNumPairs.entrySet()){
 					int index=MatrixUtil.getIndex(onePair.getKey(),bugIDArray);
