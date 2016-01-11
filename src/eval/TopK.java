@@ -78,7 +78,7 @@ public class TopK extends Evaluation{
 	 */
 	public double evaluate(String srcFilePath) throws Exception {
 		String evalDirPath=Config.getInstance().getEvaluationDir();
-		String evalFilePath=Paths.get(evalDirPath, "topk").toString();
+		String evalFilePath=Paths.get(evalDirPath, "topk@"+getK()).toString();
 		if(new File(evalFilePath).isFile()){
 			new File(evalFilePath).delete();
 		}

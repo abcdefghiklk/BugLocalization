@@ -54,7 +54,7 @@ public class VectorSpaceModel {
 		if(Config.getInstance().getTopKUsed()){
 			TopK topK=new TopK(Config.getInstance().getK());
 			topK.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
-			FileUtils.write_append2file("TopK"+"\t"+topK.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
+			FileUtils.write_append2file("TopK@"+topK.getK()+"\t"+topK.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
 //			System.out.println(topK.evaluate(simMatFilePath));
 		}	
 	}
