@@ -334,6 +334,14 @@ public class Config {
 	public boolean getMRRUsed(){
 		return(this._MRRUsed);
 	}
+	
+	/**
+	 * Get the parameter alpha
+	 * @return
+	 */
+	public double getAlpha(){
+		return(this._alpha);
+	}
 	/**
 	 * Export the configurations to a file
 	 * @param configFilePath

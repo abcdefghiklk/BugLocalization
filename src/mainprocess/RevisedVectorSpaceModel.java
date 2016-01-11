@@ -1,36 +1,27 @@
 package mainprocess;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import sourcecode.CodeDataProcessor;
-import sourcecode.CodeFeatureExtractor;
 import sourcecode.SourceCodeCorpus;
 import utils.FileUtils;
-import utils.MatrixUtil;
 import bug.BugDataProcessor;
 import bug.BugFeatureExtractor;
-import bug.BugRecord;
 import config.Config;
 import eval.MAP;
 import eval.MRR;
 import eval.TopK;
 import feature.CodeLength;
 import feature.RevisedVSMScore;
-import feature.SimiScore;
-import feature.VSMScore;
 import feature.VectorCreator;
 
-public class BugLocator {
-	
+public class RevisedVectorSpaceModel {
+
 	public static void run() throws Exception{
 		String bugCorpusDirPath=Paths.get(Config.getInstance().getIntermediateDir(), "bug").toString();
 		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
-		ArrayList<BugRecord> bugList=BugDataProcessor.importFromXML();
-		BugDataProcessor.createBugCorpus(bugList);
+		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
 		
 		String codeCorpusDirPath=Paths.get(Config.getInstance().getIntermediateDir(), "code").toString();
 		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
@@ -46,31 +37,24 @@ public class BugLocator {
 		String simMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "revisedVSMScore").toString();
 		RevisedVSMScore.generate(bugVecFilePath, codeVecFilePath, codeLengthFilePath,simMatFilePath);
 		
-		String simiScoreMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "simiScore").toString();
-		SimiScore.generate(bugVecFilePath, codeVecFilePath, bugList, simiScoreMatFilePath);
-		
-		double alpha=Config.getInstance().getAlpha();
-		String finalScoreMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "bugLocatorScore").toString();
-		MatrixUtil.linearCombination(simMatFilePath, simiScoreMatFilePath, finalScoreMatFilePath, alpha);
-		
 		String fixedFilePath=Paths.get(bugCorpusDirPath, "fixedFiles").toString();
 		//evaluations
 		if(Config.getInstance().getMRRUsed()){
 			MRR mrr=new MRR();
 			mrr.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
-			FileUtils.write_append2file("MRR"+"\t"+mrr.evaluate(finalScoreMatFilePath)+"\n", Config.getInstance().getOutputFile());
+			FileUtils.write_append2file("MRR"+"\t"+mrr.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
 		}
 				
 		if(Config.getInstance().getMAPUsed()){
 			MAP map=new MAP();
 			map.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
-			FileUtils.write_append2file("MAP"+"\t"+map.evaluate(finalScoreMatFilePath)+"\n", Config.getInstance().getOutputFile());
+			FileUtils.write_append2file("MAP"+"\t"+map.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
 		}
 				
 		if(Config.getInstance().getTopKUsed()){
 			TopK topK=new TopK(Config.getInstance().getK());
 			topK.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
-			FileUtils.write_append2file("TopK@"+topK.getK()+"\t"+topK.evaluate(finalScoreMatFilePath)+"\n", Config.getInstance().getOutputFile());
+			FileUtils.write_append2file("TopK@"+topK.getK()+"\t"+topK.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
 		}			
 		
 	}
@@ -83,11 +67,11 @@ public class BugLocator {
 		if(!new File(intermediateDirPath).isDirectory()){
 			new File(intermediateDirPath).mkdir();
 		}
-		String outputFilePath=Paths.get(rootDirPath, "BugLocator", "output").toString();
+		String outputFilePath=Paths.get(rootDirPath, "RevisedVSM", "output").toString();
 		if(new File(outputFilePath).isFile()){
 			new File(outputFilePath).delete();
 		}
-		String evaluationDirPath=Paths.get(rootDirPath, "BugLocator", "eval").toString();
+		String evaluationDirPath=Paths.get(rootDirPath, "RevisedVSM", "eval").toString();
 		String projectName="swt";
 		String datasetDirPath;
 		String bugLogFilePath;
@@ -112,10 +96,8 @@ public class BugLocator {
 			new File(evaluationDirPath).mkdir();
 		}
 		Config.getInstance().setPaths(datasetDirPath, bugLogFilePath, intermediateDirPath, outputFilePath);
-		Config.getInstance().setFeatures(new String(), true, true, 0);
 		Config.getInstance().setEvaluations(evaluationDirPath, true, true, 5, true);
 		Config.getInstance().exportConfig(configFilePath);
 		run();
 	}
-
 }

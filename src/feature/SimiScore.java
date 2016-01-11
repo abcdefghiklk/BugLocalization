@@ -19,7 +19,7 @@ public class SimiScore {
 	 * @param scoreMatFilePath
 	 * @throws Exception
 	 */
-	public static void generate(String codeVecFilePath, String bugVecFilePath, ArrayList<BugRecord> bugList, String scoreMatFilePath) throws Exception{
+	public static void generate(String bugVecFilePath, String codeVecFilePath, ArrayList<BugRecord> bugList, String scoreMatFilePath) throws Exception{
 		HashMap<String, Matrix> bugVecList = MatrixUtil.loadVectors(bugVecFilePath, Config.getInstance().getDicSize());
 		HashMap<String, Matrix> codeVecList = MatrixUtil.loadVectors(codeVecFilePath, Config.getInstance().getDicSize());
 		String []bugIDArray=bugVecList.keySet().toArray(new String[0]);
@@ -29,10 +29,18 @@ public class SimiScore {
 		for(int i=0;i<bugVecList.size();i++){
 			for(int j=0;j<codeVecList.size();j++){
 				HashMap<String,Integer> idNumPairs=BugFeatureExtractor.getPastBugsContainingTargetFile(codeClassArray[j], bugIDArray[i], bugList);			
+//				if(idNumPairs.size()!=0){
+//					for (Entry<String, Integer> pair:idNumPairs.entrySet()){
+//						System.out.println(pair.getKey()+"\t"+pair.getValue());	
+//					}
+//				}
 				double simiScore=0.0d;
 				for(Entry<String, Integer> onePair:idNumPairs.entrySet()){
 					int index=MatrixUtil.getIndex(onePair.getKey(),bugIDArray);
-					simiScore+=(simMat.get(index, i)+0.0d)/(onePair.getValue()+0.0d);
+					if(index!=-1){
+//						System.out.println("a hit!");
+						simiScore+=(simMat.get(index, i)+0.0d)/(onePair.getValue()+0.0d);
+					}
 				}
 				scoreMat.set(i, j, simiScore);
 			}

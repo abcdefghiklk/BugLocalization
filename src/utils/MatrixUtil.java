@@ -178,6 +178,37 @@ public class MatrixUtil {
 		writer.close();
 	}
 	
+	/**
+	 * Export the rowList, colList and Matrix to the file
+	 * @param rowList
+	 * @param colList
+	 * @param mat
+	 * @param dstFilePath
+	 * @throws IOException
+	 */
+	public static void exportMatrix(ArrayList<String> rowList, ArrayList<String> colList, Matrix mat, String dstFilePath) throws IOException{
+		FileWriter writer=new FileWriter(dstFilePath);
+		StringBuffer buf=new StringBuffer();
+		//First line saves the row ids
+		for(String id: rowList){
+			buf.append(id+"\t");
+		}
+		buf.append("\n");
+		
+		//Second line saves the column ids
+		for(String id: colList){
+			buf.append(id+"\t");
+		}
+		buf.append("\n");
+		for(int i=0;i<mat.getRowDimension();i++){
+			for(int j=0;j<mat.getColumnDimension();j++){
+				buf.append(String.valueOf(mat.get(i, j))+"\t");
+			}
+			buf.append("\n");
+		}
+		writer.write(buf.toString());
+		writer.close();
+	}
 	
 	/**
 	 * Export the similarity Matrix to file
@@ -268,6 +299,7 @@ public class MatrixUtil {
 		int i=0;
 		while((line=reader.readLine())!=null){
 			String []strs=line.split("\t");
+//			System.out.println(strs.length);
 			for(int j=0; j<strs.length;j++){
 				simMat.set(i, j, Double.parseDouble(strs[j]));
 			}
@@ -333,12 +365,39 @@ public class MatrixUtil {
 	 */
 	public static int getIndex(String targetString,String []strArray){
 		for(int i=0;i<strArray.length;i++){
-			if(strArray[i]==targetString){
+			if(strArray[i].equals(targetString)){
 				return i;
 			}
 		}
 		return -1;
 	}
+	
+	/**
+	 * Linear combination of two matrix file
+	 * @param matFilePath1
+	 * @param matFilePath2
+	 * @param dstFilePath
+	 * @param linearInterpolator
+	 * @throws Exception 
+	 */
+	public static void linearCombination(String matFilePath1, String matFilePath2, String dstFilePath, double linearInterpolator) throws Exception{
+		ArrayList<String> rowList=new ArrayList<String> ();
+		ArrayList<String> colList=new ArrayList<String> ();
+		Matrix mat1=importSimilarityMatrix(rowList, colList, matFilePath1);
+		Matrix mat2=importSimilarityMatrix(rowList, colList, matFilePath2);
+		if(mat1.getRowDimension()!=mat2.getRowDimension() || mat1.getColumnDimension()!=mat2.getColumnDimension()){
+			System.out.println("error--the two matrices are different in size!");
+			return;
+		}
+		Matrix resultMat=Matrix.random(mat1.getRowDimension(), mat1.getColumnDimension());
+		for(int i=0; i<mat1.getRowDimension();i++){
+			for(int j=0;j<mat2.getColumnDimension();j++){
+				resultMat.set(i, j, linearInterpolator*mat1.get(i, j)+(1-linearInterpolator)*mat2.get(i, j));
+			}
+		}
+		exportMatrix(rowList,colList,resultMat,dstFilePath);
+	}
+	
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 //		HashMap<String, Matrix> map1=new HashMap<String, Matrix>();

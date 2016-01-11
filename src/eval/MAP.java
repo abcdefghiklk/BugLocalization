@@ -81,7 +81,7 @@ public class MAP extends Evaluation{
 				precision+=(oracleCount+0.0d)/(rank+0.0d);
 			}
 			sumPrecision+=precision/(oracleCount+0.0d);
-			FileUtils.write_append2file(oneBugID+"\t"+precision+"\n", evalFilePath);
+			FileUtils.write_append2file(oneBugID+"\t"+precision/(oracleCount+0.0d)+"\n", evalFilePath);
 		}
 		// TODO Auto-generated method stub
 		
