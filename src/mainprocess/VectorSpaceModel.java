@@ -36,7 +36,7 @@ public class VectorSpaceModel {
 				
 		String fixedFilePath=Paths.get(bugCorpusDirPath, "fixedFiles").toString();
 		
-		
+//		simMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "revisedVSMScore").toString();
 		//evaluations
 		if(Config.getInstance().getMRRUsed()){
 			MRR mrr=new MRR();
@@ -60,7 +60,7 @@ public class VectorSpaceModel {
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		String rootDirPath="C:/Users/dell/Documents/EClipse";
+		String rootDirPath="C:/Users/ql29/Documents/EClipse";
 		String configFilePath=Paths.get(rootDirPath, "property").toString();
 		String datasetsDirPath=Paths.get(rootDirPath,"Dataset").toString();
 		String intermediateDirPath=Paths.get(rootDirPath, "Corpus").toString();

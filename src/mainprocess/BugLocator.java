@@ -27,14 +27,14 @@ public class BugLocator {
 	public static void run() throws Exception{
 		String bugCorpusDirPath=Paths.get(Config.getInstance().getIntermediateDir(), "bug").toString();
 		Config.getInstance().setBugCorpusDir(bugCorpusDirPath);
-//		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
+		BugDataProcessor.createBugCorpus(BugDataProcessor.importFromXML());
 		
 		String codeCorpusDirPath=Paths.get(Config.getInstance().getIntermediateDir(), "code").toString();
 		Config.getInstance().setCodeCorpusDir(codeCorpusDirPath);
 		SourceCodeCorpus corpus=CodeDataProcessor.extractCodeData();
 		String codeLengthFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "codelength").toString();
-//		CodeLength.generate(corpus, codeLengthFilePath);
-//		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
+		CodeLength.generate(corpus, codeLengthFilePath);
+		CodeDataProcessor.exportCodeData(CodeDataProcessor.extractCodeData());
 		
 		String bugVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "bugVec").toString();
 		String codeVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "codeVec").toString();
@@ -66,7 +66,7 @@ public class BugLocator {
 	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		String rootDirPath="C:/Users/dell/Documents/EClipse";
+		String rootDirPath="C:/Users/ql29/Documents/EClipse";
 		String configFilePath=Paths.get(rootDirPath, "property").toString();
 		String datasetsDirPath=Paths.get(rootDirPath,"Dataset").toString();
 		String intermediateDirPath=Paths.get(rootDirPath, "Corpus").toString();

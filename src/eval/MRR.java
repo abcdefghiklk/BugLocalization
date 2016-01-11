@@ -49,7 +49,9 @@ public class MRR extends Evaluation{
 		ArrayList<String> codeClassList=new ArrayList<String>();
 		Matrix scoreMat= MatrixUtil.importSimilarityMatrix(bugIdList, codeClassList, srcFilePath);
 		String [] bugIDArray= bugIdList.toArray(new String[0]);
+//		System.out.println(bugIDArray[0]);
 		String [] codeClassArray = codeClassList.toArray(new String[0]);
+//		System.out.println(codeClassArray[0]);
 		double MRRValue=0.0d;
 		
 		//traverse every bug
@@ -61,7 +63,6 @@ public class MRR extends Evaluation{
 			String oneBugID=bugIDArray[i];
 			TreeSet<String> fixedFileSet= oracles.get(oneBugID);
 			ArrayList<Integer> indexSet = super.getIndexSet(fixedFileSet, codeClassArray);
-			
 			//obtain the RR value, which is 1/rank_1
 			SortedSet<Integer> rankSet = new TreeSet<Integer>();
 			for(int index:indexSet){

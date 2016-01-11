@@ -29,7 +29,7 @@ public class RevisedVSMScore {
 		//Calculate and save the similarity between each code and each bug in the file
 //		Matrix simMat=MatrixUtil.computeSimilarityMatrix(bugVecList,codeVecList,dicSize);
 		int rowCount=bugVecList.size();
-		int colCount=bugVecList.size();
+		int colCount=codeVecList.size();
 		Matrix simMat=new Matrix(rowCount, colCount);
 		Matrix []bugVecArray=bugVecList.values().toArray(new Matrix[0]);
 		Matrix []codeVecArray=codeVecList.values().toArray(new Matrix[0]);
