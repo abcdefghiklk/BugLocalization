@@ -67,11 +67,11 @@ public class VectorSpaceModel {
 		if(!new File(intermediateDirPath).isDirectory()){
 			new File(intermediateDirPath).mkdir();
 		}
-		String outputFilePath=Paths.get(rootDirPath, "output").toString();
+		String outputFilePath=Paths.get(rootDirPath, "VSM", "output").toString();
 		if(new File(outputFilePath).isFile()){
 			new File(outputFilePath).delete();
 		}
-		String evaluationDirPath=Paths.get(rootDirPath, "eval").toString();
+		String evaluationDirPath=Paths.get(rootDirPath, "VSM", "eval").toString();
 		String projectName="swt";
 		String datasetDirPath;
 		String bugLogFilePath;
@@ -97,6 +97,7 @@ public class VectorSpaceModel {
 		}
 		Config.getInstance().setPaths(datasetDirPath, bugLogFilePath, intermediateDirPath, outputFilePath);
 		Config.getInstance().setEvaluations(evaluationDirPath, true, true, 5, true);
+		Config.getInstance().exportConfig(configFilePath);
 		run();
 		
 	}

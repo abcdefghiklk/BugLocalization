@@ -125,8 +125,8 @@ public class CodeFeatureExtractor {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HashMap<String, Integer> loadCodeLength(String srcFilePath) throws Exception{
-		HashMap<String, Integer> fileLengthPairs=new HashMap<String, Integer>();
+	public static HashMap<String, Double> loadCodeLength(String srcFilePath) throws Exception{
+		HashMap<String, Double> fileLengthPairs=new HashMap<String, Double>();
 		if(!new File(srcFilePath).isFile()){
 			System.out.println("The input file path is invalid!");
 			return fileLengthPairs;
@@ -136,7 +136,7 @@ public class CodeFeatureExtractor {
 		while((line=reader.readLine())!=null){
 			String strs[]=line.split("\t");
 			String fileName=strs[0].trim();
-			int fileSize=Integer.parseInt(strs[1].trim());
+			double fileSize=Double.parseDouble(strs[1].trim());
 			fileLengthPairs.put(fileName, fileSize);
 		}
 		reader.close();

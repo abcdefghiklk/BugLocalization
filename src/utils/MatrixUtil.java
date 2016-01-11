@@ -63,7 +63,6 @@ public class MatrixUtil {
 		int colCount=idMatPairs2.size();
 		Matrix simMat=new Matrix(rowCount, colCount);
 		Matrix []matList1=idMatPairs1.values().toArray(new Matrix[0]);
-		String []idArray1=idMatPairs1.keySet().toArray(new String[0]);
 		Matrix []matList2=idMatPairs2.values().toArray(new Matrix[0]);
 		for (int i=0; i<rowCount; i++){
 			for (int j=0; j<colCount; j++){

@@ -9,10 +9,11 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import sourcecode.CodeFeatureExtractor;
+import sourcecode.SourceCodeCorpus;
 
 public class CodeLength {
-	public static void generate(String codeLengthFilePath, String dstFilePath) throws Exception{
-		HashMap<String, Integer> fileClassLengthPairs= CodeFeatureExtractor.extractCodeLength(codeLengthFilePath);
+	public static void generate(SourceCodeCorpus corpus, String dstFilePath) throws Exception{
+		HashMap<String, Integer> fileClassLengthPairs= CodeFeatureExtractor.extractCodeLength(corpus);
 		HashMap<String, Double> normalizedLengths= normalize(fileClassLengthPairs);
 		HashMap<String, Double> nonLinearTransformedLengths= nonLinearTransform(normalizedLengths, "logistic");
 		savePairs(dstFilePath, nonLinearTransformedLengths);
@@ -57,18 +58,21 @@ public class CodeLength {
 		HashMap<String, Double> nonLinearTransformedPairs=new HashMap<String, Double>();
 		for(Entry<String, Double> pair:originalPairs.entrySet()){
 			double transformedValue=0.0d;
-			switch(functionType.toLowerCase()){
-				case "logistic":
-					transformedValue=logistic(pair.getValue(),1);
-				case "exponential":
-					transformedValue=exponential(pair.getValue());
-				case "square root":
-					transformedValue=squareRoot(pair.getValue());
-				case "linear":
-					transformedValue=linear(pair.getValue());
-				default:
-					System.out.println("The input function type is illegal, so the default function type, logistic function is used");
-					transformedValue=logistic(pair.getValue(),1);
+			if(functionType.toLowerCase().equals("logistic")){
+				transformedValue=logistic(pair.getValue(),1);
+			}
+			else if(functionType.toLowerCase().equals("exponential")){
+				transformedValue=exponential(pair.getValue());
+			}
+			else if(functionType.toLowerCase().equals("squareroot")){
+				transformedValue=squareRoot(pair.getValue());
+			}
+			else if(functionType.toLowerCase().equals("linear")){
+				transformedValue=linear(pair.getValue());
+			}
+			else{
+				System.out.println("The input function type is illegal, so the default function type, logistic function is used");
+				transformedValue=logistic(pair.getValue(),1);
 			}
 			nonLinearTransformedPairs.put(pair.getKey(), transformedValue);
 		}
