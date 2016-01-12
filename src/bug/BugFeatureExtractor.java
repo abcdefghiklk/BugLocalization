@@ -18,6 +18,7 @@ import edu.udo.cs.wvtool.wordlist.WVTWordList;
 import sourcecode.CodeDataProcessor;
 import sourcecode.SourceCodeCorpus;
 import utils.DateFormat;
+import utils.FileUtils;
 import utils.Splitter;
 import utils.Stopword;
 import utils.WVToolWrapper;
@@ -57,7 +58,7 @@ public class BugFeatureExtractor {
 		HashMap <String, String> idInformationPairs=new HashMap<String, String>();
 		File srcDir=new File(srcDirPath);
 		if(!srcDir.isDirectory()){
-			System.out.println("the Input directory path is invalid!");
+			System.out.println("the bug information directory path is invalid!");
 			return idInformationPairs;
 		}
 		
@@ -86,10 +87,7 @@ public class BugFeatureExtractor {
 	 * @throws IOException 
 	 */
 	public static void exportBugInformation(HashMap <String, String> idInformationPairs, String dstDirPath) throws IOException{
-		File dstDir = new File(dstDirPath);
-		if(!dstDir.isDirectory()){
-			dstDir.mkdir();
-		}
+		FileUtils.createDir(dstDirPath);
 		for(Entry<String, String> idInfoPair : idInformationPairs.entrySet()){
 			FileWriter writer = new FileWriter(Paths.get(dstDirPath, idInfoPair.getKey()).toFile());
 			writer.write(idInfoPair.getValue());
@@ -97,11 +95,6 @@ public class BugFeatureExtractor {
 		}
 	}
 	
-
-	
-	
-	
-
 	/**
 	 * Extract <bug, summary> pairs from BugRecord List
 	 * @param BugList
@@ -125,7 +118,7 @@ public class BugFeatureExtractor {
 		HashMap <String, String> idSummaryPairs=new HashMap<String, String>();
 		File srcDir=new File(srcDirPath);
 		if(!srcDir.isDirectory()){
-			System.out.println("the Input directory path is invalid!");
+			System.out.println("the bug summary directory path is invalid!");
 			return idSummaryPairs;
 		}
 		
@@ -176,10 +169,7 @@ public class BugFeatureExtractor {
 	 * @throws IOException 
 	 */
 	public static void exportBugSummary(HashMap <String, String> idSummaryPairs, String dstDirPath) throws IOException{
-		File dstDir = new File(dstDirPath);
-		if(!dstDir.isDirectory()){
-			dstDir.mkdir();
-		}
+		FileUtils.createDir(dstDirPath);
 		for(Entry<String, String> idSumPair : idSummaryPairs.entrySet()){
 			FileWriter writer = new FileWriter(Paths.get(dstDirPath, idSumPair.getKey()).toFile());
 			writer.write(idSumPair.getValue());
@@ -211,7 +201,7 @@ public class BugFeatureExtractor {
 		HashMap <String, String> idDescriptionPairs=new HashMap<String, String>();
 		File srcDir=new File(srcDirPath);
 		if(!srcDir.isDirectory()){
-			System.out.println("the Input directory path is invalid!");
+			System.out.println("the bug description directory path is invalid!");
 			return idDescriptionPairs;
 		}
 		
@@ -262,22 +252,13 @@ public class BugFeatureExtractor {
 	 * @throws Exception 
 	 */
 	public static void exportBugDescription(HashMap <String, String> idDescriptionPairs, String dstDirPath) throws Exception{
-		File dstDir = new File(dstDirPath);
-		if(!dstDir.isDirectory()){
-			dstDir.mkdir();
-		}
+		FileUtils.createDir(dstDirPath);
 		for(Entry<String, String> idDesPair : idDescriptionPairs.entrySet()){
 			FileWriter writer = new FileWriter(Paths.get(dstDirPath, idDesPair.getKey()).toFile());
 			writer.write(idDesPair.getValue());
 			writer.close();
 		}
 	}
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * Extract <bug, OpenDate> pairs from the BugRecord List
@@ -302,7 +283,7 @@ public class BugFeatureExtractor {
 	public static HashMap<String, Date> extractOpenDate(String srcFilePath) throws IOException, Exception{
 		HashMap<String, Date> idOpenDatePairs=new HashMap<String, Date>();
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("The input file path is invalid!");
+			System.out.println("The open date file path is invalid!");
 			return idOpenDatePairs;
 		}
 		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
@@ -349,20 +330,12 @@ public class BugFeatureExtractor {
 	 * @throws IOException
 	 */
 	public static void exportOpenDate(HashMap<String, Date> idOpenDatePairs, String dstFilePath) throws IOException{
-		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		for(Entry<String, Date> pair:idOpenDatePairs.entrySet()){
 			buf.append(pair.getKey()+"\t"+DateFormat.getFormat().format(pair.getValue())+"\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
-	}
-	
-	
-	
-	
-	
-	
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
+	}	
 	
 	/**
 	 * Extract <bug, FixDate> pairs from the BugRecord List
@@ -387,7 +360,7 @@ public class BugFeatureExtractor {
 	public static HashMap<String, Date> extractFixDate(String srcFilePath) throws IOException, Exception{
 		HashMap<String, Date> idFixDatePairs=new HashMap<String, Date>();
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("The input file path is invalid!");
+			System.out.println("The fix date file path is invalid!");
 			return idFixDatePairs;
 		}
 		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
@@ -434,13 +407,11 @@ public class BugFeatureExtractor {
 	 * @throws IOException
 	 */
 	public static void exportFixDate(HashMap<String, Date> idFixDatePairs, String dstFilePath) throws IOException{
-		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		for(Entry<String, Date> pair:idFixDatePairs.entrySet()){
 			buf.append(pair.getKey()+"\t"+DateFormat.getFormat().format(pair.getValue())+"\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
 	}
 	
 	
@@ -466,7 +437,7 @@ public class BugFeatureExtractor {
 	public static HashMap<String, TreeSet<String>> extractFixedFiles(String srcFilePath) throws Exception{
 		HashMap<String, TreeSet<String>> idFixedFilesPairs=new HashMap<String, TreeSet<String>>();
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("The input file path is invalid!");
+			System.out.println("The fixed files path is invalid!");
 			return idFixedFilesPairs;
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(srcFilePath));
@@ -521,7 +492,6 @@ public class BugFeatureExtractor {
 	 * @throws IOException
 	 */
 	public static void exportFixedFiles(HashMap<String, TreeSet<String>> idFixedFilesPairs, String dstFilePath) throws IOException{
-		FileWriter writer = new FileWriter(dstFilePath);
 		StringBuffer buf = new StringBuffer();
 		for(Entry <String, TreeSet<String>> pair: idFixedFilesPairs.entrySet()){
 			String onePairStr=pair.getKey();
@@ -530,8 +500,7 @@ public class BugFeatureExtractor {
 			}
 			buf.append(onePairStr+"\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
 	}
 	
 	
@@ -547,7 +516,7 @@ public class BugFeatureExtractor {
 	public static HashMap<String, TreeSet<String>> extractFilesInDescription(String srcFilePath) throws Exception{
 		HashMap<String, TreeSet<String>> idFilesInDescriptionPairs=new HashMap<String, TreeSet<String>>();
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("The input file path is invalid!");
+			System.out.println("The description file path is invalid!");
 			return idFilesInDescriptionPairs;
 		}
 		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
@@ -574,7 +543,6 @@ public class BugFeatureExtractor {
 	 * @throws IOException
 	 */
 	public static void exportFilesInDescription(HashMap<String, TreeSet<String>> idFilesInDescriptionPairs, String dstFilePath) throws IOException{
-		FileWriter writer = new FileWriter(dstFilePath);
 		StringBuffer buf = new StringBuffer();
 		for(Entry <String, TreeSet<String>> pair: idFilesInDescriptionPairs.entrySet()){
 			String onePairStr=pair.getKey();
@@ -583,8 +551,7 @@ public class BugFeatureExtractor {
 			}
 			buf.append(onePairStr+"\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
 	}
 	
 	/**
@@ -595,7 +562,7 @@ public class BugFeatureExtractor {
 	 */
 	public static WVTWordList extractBugDictionary(String bugCorpusDirPath) throws Exception{
 		if(!new File(bugCorpusDirPath).isDirectory()){
-			System.out.println("The corpus directory is invalid!");
+			System.out.println("The bug corpus directory is invalid!");
 			return new WVTWordList(1);
 		}
 		WVTFileInputList list=WVToolWrapper.extractCorpusFileList(bugCorpusDirPath);
@@ -622,7 +589,7 @@ public class BugFeatureExtractor {
 	public static ArrayList<String> importBugDictionary(String dicFilePath) throws Exception{
 		ArrayList<String> dictionary=new ArrayList<String>();
 		if(!new File(dicFilePath).isFile()){
-			System.out.println("The dictionary file path is invalid!");
+			System.out.println("The bug dictionary file path is invalid!");
 			return dictionary;
 		}
 		BufferedReader reader=new BufferedReader(new FileReader(dicFilePath));

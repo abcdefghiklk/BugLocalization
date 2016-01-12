@@ -36,7 +36,6 @@ public class VectorSpaceModel {
 				
 		String fixedFilePath=Paths.get(bugCorpusDirPath, "fixedFiles").toString();
 		
-//		simMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "revisedVSMScore").toString();
 		//evaluations
 		if(Config.getInstance().getMRRUsed()){
 			MRR mrr=new MRR();
@@ -48,14 +47,12 @@ public class VectorSpaceModel {
 			MAP map=new MAP();
 			map.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
 			FileUtils.write_append2file("MAP"+"\t"+map.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
-//			System.out.println(map.evaluate(simMatFilePath));
 		}
 		
 		if(Config.getInstance().getTopKUsed()){
 			TopK topK=new TopK(Config.getInstance().getK());
 			topK.set(BugFeatureExtractor.extractFixedFiles(fixedFilePath));
 			FileUtils.write_append2file("TopK@"+topK.getK()+"\t"+topK.evaluate(simMatFilePath)+"\n", Config.getInstance().getOutputFile());
-//			System.out.println(topK.evaluate(simMatFilePath));
 		}	
 	}
 	public static void main(String[] args) throws Exception {

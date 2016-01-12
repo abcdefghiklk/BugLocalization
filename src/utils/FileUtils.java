@@ -30,6 +30,36 @@ public class FileUtils {
 			System.out.println("Writing to file error- " + e);
 		}
 	}
+	
+	/**
+	 * If the given path has an existing file then delete
+	 * @param srcFilePath
+	 */
+	public static void deleteExistingFile(String srcFilePath){
+		if(new File(srcFilePath).isFile()){
+			new File(srcFilePath).delete();
+		}
+	}
+	
+	/**
+	 * If the given path is not a directory then create one
+	 * @param srcDirPath
+	 */
+	public static void createDir(String srcDirPath){
+		if(!new File(srcDirPath).isDirectory()){
+			new File(srcDirPath).mkdir();
+		}
+	}
+	
+	/**
+	 * If the given file is not a directory then create one
+	 * @param srcDirPath
+	 */
+	public static void createDir(File srcDir){
+		if(!srcDir.isDirectory()){
+			srcDir.mkdir();
+		}
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

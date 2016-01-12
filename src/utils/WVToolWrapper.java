@@ -13,6 +13,7 @@ import edu.udo.cs.wvtool.generic.stemmer.LovinsStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.PorterStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.WVTStemmer;
 import edu.udo.cs.wvtool.generic.vectorcreation.TFIDF;
+import edu.udo.cs.wvtool.generic.vectorcreation.TermFrequency;
 import edu.udo.cs.wvtool.main.WVTDocumentInfo;
 import edu.udo.cs.wvtool.main.WVTFileInputList;
 import edu.udo.cs.wvtool.main.WVTool;

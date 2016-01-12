@@ -15,7 +15,6 @@ import Jama.Matrix;
 
 public class MatrixUtil {
 
-	
 	/**
 	 * Load the vector list from file
 	 * @param srcFilePath
@@ -26,7 +25,7 @@ public class MatrixUtil {
 	public static HashMap<String, Matrix> loadVectors(String srcFilePath, int dicSize) throws Exception{
 		HashMap<String, Matrix> idVecPairs=new HashMap<String, Matrix>();
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("Input File invalid!");
+			System.out.println("the vector file is invalid!");
 			return idVecPairs;
 		}
 		BufferedReader reader=new BufferedReader(new FileReader(srcFilePath));
@@ -52,7 +51,7 @@ public class MatrixUtil {
 	}
 	
 	/**
-	 * Compute the similarity matrix between two list of vectors
+	 * Compute similarity matrix for the two given list of vectors
 	 * @param idMatPairs1
 	 * @param idMatPairs2
 	 * @param dicSize
@@ -129,7 +128,6 @@ public class MatrixUtil {
 	 * @throws IOException
 	 */
 	public static void exportSimilarityMatrix(HashMap<String, Matrix> idMatPairs, String dstFilePath, int dicSize) throws IOException{
-		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		for(String id: idMatPairs.keySet()){
 			buf.append(id+"\t");
@@ -142,20 +140,18 @@ public class MatrixUtil {
 			}
 			buf.append("\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
 	}
 	
 	/**
-	 * Export the rowSet, colSet and matrix to the file
-	 * @param rowSet
-	 * @param colSet
+	 * Export the rowMap, colMap and matrix to the file
+	 * @param rowMap
+	 * @param colMap
 	 * @param mat
 	 * @param dstFilePath
 	 * @throws IOException
 	 */
 	public static void exportMatrix(HashMap<String, Matrix> rowMap, HashMap<String, Matrix> colMap, Matrix mat, String dstFilePath) throws IOException{
-		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		//First line saves the row ids
 		for(String id: rowMap.keySet()){
@@ -174,8 +170,7 @@ public class MatrixUtil {
 			}
 			buf.append("\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
 	}
 	
 	/**
@@ -187,7 +182,6 @@ public class MatrixUtil {
 	 * @throws IOException
 	 */
 	public static void exportMatrix(ArrayList<String> rowList, ArrayList<String> colList, Matrix mat, String dstFilePath) throws IOException{
-		FileWriter writer=new FileWriter(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		//First line saves the row ids
 		for(String id: rowList){
@@ -206,8 +200,7 @@ public class MatrixUtil {
 			}
 			buf.append("\n");
 		}
-		writer.write(buf.toString());
-		writer.close();
+		FileUtils.write_append2file(buf.toString(), dstFilePath);
 	}
 	
 	/**
@@ -234,7 +227,7 @@ public class MatrixUtil {
 	 */
 	public static Matrix importSimilarityMatrix(ArrayList<String> idList, String srcFilePath) throws Exception{
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("The input file path is invalid");
+			System.out.println("The similarity file path is invalid");
 			return Matrix.random(0, 0);
 		}
 		
@@ -273,7 +266,7 @@ public class MatrixUtil {
 	 */
 	public static Matrix importSimilarityMatrix(ArrayList<String> idList1, ArrayList<String> idList2, String srcFilePath) throws Exception{
 		if(!new File(srcFilePath).isFile()){
-			System.out.println("The input file path is invalid");
+			System.out.println("The similarity file path is invalid");
 			return Matrix.random(0, 0);
 		}
 		

@@ -8,6 +8,7 @@ import org.w3c.dom.NodeList;
 
 import config.Config;
 import utils.DateFormat;
+import utils.FileUtils;
 import utils.Splitter;
 import utils.Stem;
 import utils.Stopword;
@@ -156,63 +157,49 @@ public class BugDataProcessor {
 	 */
 	static public void createBugCorpus(ArrayList<BugRecord> bugList) throws IOException{
 		String corpusDirPath= Config.getInstance().getBugCorpusDir();
-		File corpusDir=new File(corpusDirPath);
-		if(!corpusDir.exists()){
-			corpusDir.mkdir();
-		}
+		FileUtils.createDir(corpusDirPath);
 		
 		//bug description corpus
-		File bugDescriptionCorpusDir = Paths.get(corpusDirPath,"description").toFile();
-		if (!bugDescriptionCorpusDir.exists()){
-			bugDescriptionCorpusDir.mkdir();
-		}
+		String bugDescriptionCorpusDirPath = Paths.get(corpusDirPath,"description").toString();
+		FileUtils.createDir(bugDescriptionCorpusDirPath);
 		
 		//bug summary corpus
-		File bugSummaryCorpusDir = Paths.get(corpusDirPath,"summary").toFile();
-		if (!bugSummaryCorpusDir.exists()){
-			bugSummaryCorpusDir.mkdir();
-		}
+		String bugSummaryCorpusDirPath = Paths.get(corpusDirPath,"summary").toString();
+		FileUtils.createDir(bugSummaryCorpusDirPath);
 		
 		//bug description & summary corpus
-		File bugInformationCorpusDir = Paths.get(corpusDirPath,"information").toFile();
-		if (!bugInformationCorpusDir.exists()){
-			bugInformationCorpusDir.mkdir();
-		}
+		String bugInformationCorpusDirPath = Paths.get(corpusDirPath,"information").toString();
+		FileUtils.createDir(bugInformationCorpusDirPath);
 		
 		//bug open dates file
 		String openDateFilePath = Paths.get(corpusDirPath, "openDate").toString();
-		if(new File(openDateFilePath).isFile()){
-			new File(openDateFilePath).delete();
-		}
-		FileWriter openDateWriter = new FileWriter(openDateFilePath,true);
+		FileUtils.deleteExistingFile(openDateFilePath);
 		
 		//bug fix dates file
 		String fixDateFilePath = Paths.get(corpusDirPath, "fixDate").toString();
-		if(new File(fixDateFilePath).isFile()){
-			new File(fixDateFilePath).delete();
-		}
-		FileWriter fixDateWriter=new FileWriter(fixDateFilePath,true);
-		
+		FileUtils.deleteExistingFile(fixDateFilePath);
+			
 		//the file containing fixed classes(files) for a bug
 		String fixedClassesFilePath = Paths.get(corpusDirPath, "fixedFiles").toString();
-		if(new File(fixedClassesFilePath).isFile()){
-			new File(fixedClassesFilePath).delete();
-		}
-		FileWriter fixedClassesWriter=new FileWriter(fixedClassesFilePath,true);
+		FileUtils.deleteExistingFile(fixedClassesFilePath);
 		
 		//the file containing mentioned classes(files) in description
 		String classesInDescriptionFilePath = Paths.get(corpusDirPath, "filenamesInDescription").toString();
-		if(new File(classesInDescriptionFilePath).isFile()){
-			new File(classesInDescriptionFilePath).delete();
-		}
-		FileWriter classesInDescriptionWriter = new FileWriter(classesInDescriptionFilePath,true);
+		FileUtils.deleteExistingFile(classesInDescriptionFilePath);
+		
 		
 		//for every bug, create its corpus for the summary part, description part, and summary & description part
 		//and record the open dates, fix dates
 		for (BugRecord _bug: bugList){
-			FileWriter summaryWriter = new FileWriter(Paths.get(corpusDirPath,"summary", _bug.getBugId()).toString());
-			FileWriter descriptionWriter = new FileWriter(Paths.get(corpusDirPath,"description", _bug.getBugId()).toString());
-			FileWriter informationWriter = new FileWriter(Paths.get(corpusDirPath,"information", _bug.getBugId()).toString());
+			String summaryFilePath = Paths.get(corpusDirPath,"summary", _bug.getBugId()).toString();
+			FileUtils.deleteExistingFile(summaryFilePath);
+//			FileWriter summaryWriter = new FileWriter(Paths.get(corpusDirPath,"summary", _bug.getBugId()).toString());
+			String descriptionFilePath = Paths.get(corpusDirPath,"description", _bug.getBugId()).toString();
+			FileUtils.deleteExistingFile(summaryFilePath);
+//			FileWriter descriptionWriter = new FileWriter(Paths.get(corpusDirPath,"description", _bug.getBugId()).toString());
+			String informationFilePath = Paths.get(corpusDirPath,"information", _bug.getBugId()).toString();
+			FileUtils.deleteExistingFile(informationFilePath);
+//			FileWriter informationWriter = new FileWriter(Paths.get(corpusDirPath,"information", _bug.getBugId()).toString());
 			
 			String [] bugSummaryWords = Splitter.splitNatureLanguage(_bug.getBugSummary());
 			String [] bugDescriptionWords = Splitter.splitNatureLanguage(_bug.getBugDescription());
@@ -240,46 +227,26 @@ public class BugDataProcessor {
 				}
 			}
 			
-			summaryWriter.write(summaryBuffer.toString().trim());
-			summaryWriter.flush();
-			summaryWriter.close();
-			
-			descriptionWriter.write(descriptionBuffer.toString().trim());
-			descriptionWriter.flush();
-			descriptionWriter.close();
-			
-			informationWriter.write(informationBuffer.toString().trim());
-			informationWriter.flush();
-			informationWriter.close();
+			FileUtils.write_append2file(summaryBuffer.toString().trim(), summaryFilePath);			
+			FileUtils.write_append2file(descriptionBuffer.toString().trim(), descriptionFilePath);			
+			FileUtils.write_append2file(informationBuffer.toString().trim(), informationFilePath);
 			
 			//export bug openDate and fixDate to file
-			openDateWriter.write(_bug.getBugId()+"\t"+DateFormat.getFormat().format(_bug.getOpenDate())+"\n");
-			openDateWriter.flush();
-			
-			
-			fixDateWriter.write(_bug.getBugId()+"\t"+DateFormat.getFormat().format(_bug.getFixDate())+"\n");
-			fixDateWriter.flush();
-			
+			FileUtils.write_append2file(_bug.getBugId()+"\t"+DateFormat.getFormat().format(_bug.getOpenDate())+"\n", openDateFilePath);
+			FileUtils.write_append2file(_bug.getBugId()+"\t"+DateFormat.getFormat().format(_bug.getFixDate())+"\n", fixDateFilePath);
 			
 			//export fixed files
 			String fixedFilesString=_bug.getBugId();
 			for (String fileName: _bug.getFixedFileSet()){
 				fixedFilesString+="\t"+fileName;
 			}
-			fixedClassesWriter.write(fixedFilesString.trim()+"\n");
-			fixedClassesWriter.flush();
-			
-			
+			FileUtils.write_append2file(fixedFilesString+"\n", fixedClassesFilePath);
+						
 			//export files appeared in description
 			String filesInDescriptionString=extractClassName(_bug.getBugDescription());
-			classesInDescriptionWriter.write(_bug.getBugId()+"\t"+filesInDescriptionString.trim()+"\n");
-			classesInDescriptionWriter.flush();
+			FileUtils.write_append2file(filesInDescriptionString, classesInDescriptionFilePath);
 			
 		}
-		openDateWriter.close();
-		fixDateWriter.close();
-		fixedClassesWriter.close();
-		classesInDescriptionWriter.close();	
 	}
 	
 
