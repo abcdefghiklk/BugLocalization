@@ -2,7 +2,9 @@ package utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
+import Jama.Matrix;
 import edu.udo.cs.wvtool.config.WVTConfigException;
 import edu.udo.cs.wvtool.config.WVTConfiguration;
 import edu.udo.cs.wvtool.config.WVTConfigurationFact;
@@ -28,6 +30,12 @@ public class testWVWrapper {
 		// TODO Auto-generated method stub
 		String corpusDirPath="C:/Users/ql29/Documents/EClipse/testFolder";
 		String dstFilePath="C:/Users/ql29/Documents/EClipse/vectors";
+		String dstFilePath_tf="C:/Users/ql29/Documents/EClipse/vectors_tf";
+		String dstFilePath_logtf="C:/Users/ql29/Documents/EClipse/vectors_logtf";
+		String dstFilePath_df="C:/Users/ql29/Documents/EClipse/vectors_df";
+		String dstFilePath_idf="C:/Users/ql29/Documents/EClipse/vectors_idf";
+		String dstFilePath_tfidf="C:/Users/ql29/Documents/EClipse/vectors_tfidf";
+		String dstFilePath_logtfidf="C:/Users/ql29/Documents/EClipse/vectors_logtfidf";
 		String vocabularyFilePath="C:/Users/ql29/Documents/EClipse/vocabulary";
 		WVTFileInputList list = WVToolWrapper.extractCorpusFileList(corpusDirPath);
 		WVTool wvt = new WVTool(false);
@@ -65,9 +73,22 @@ public class testWVWrapper {
 		WordVectorWriter wvw= new WordVectorWriter(new FileWriter(dstFilePath),true);
 		WVTConfiguration config = new WVTConfiguration();
 		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw));
-		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new BinaryOccurrences()));
+		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TermOccurrences()));
 		wvt.createVectors(list, config, dic);
 		wvw.close();
+		HashMap<String, Matrix> occurencesMap=MatrixUtil.loadVectors(dstFilePath, dic.getNumWords());
+		HashMap<String, Matrix> termFrequencyMap= MatrixUtil.convert(occurencesMap,"logtf");
+		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_logtf);
+//		termFrequencyMap= MatrixUtil.convert(occurencesMap,"logtf");
+//		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_logtf);
+//		termFrequencyMap= MatrixUtil.convert(occurencesMap,"df");
+//		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_df);
+//		termFrequencyMap= MatrixUtil.convert(occurencesMap,"idf");
+//		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_idf);
+//		termFrequencyMap= MatrixUtil.convert(occurencesMap,"tfidf");
+//		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_tfidf);
+//		termFrequencyMap= MatrixUtil.convert(occurencesMap,"logtfidf");
+//		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_logtfidf);
 //		WVToolWrapper.generateVectors(dstFilePath, list, dic);
 //		WVToolWrapper.generateVectors(dstFilePath2, list2, dic);
 	}

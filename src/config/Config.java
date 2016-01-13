@@ -86,8 +86,8 @@ public class Config {
 
 		this._featuresDir=new String();
 		this._dicSize=0;
-		this._minCutoffFrequency=0;
-		this._maxCutoffFrequency=0;
+		this._minCutoffFrequency=-1;
+		this._maxCutoffFrequency=-1;
 		
 		
 		
@@ -342,6 +342,23 @@ public class Config {
 	public double getAlpha(){
 		return(this._alpha);
 	}
+	
+	/**
+	 * Get the maximum cutoff term frequency
+	 * @return
+	 */
+	public int getMaxCutoffFrequency(){
+		return(this._maxCutoffFrequency);
+	}
+	
+	/**
+	 * Get the maximum cutoff term frequency
+	 * @return
+	 */
+	public int getMinCutoffFrequency(){
+		return(this._minCutoffFrequency);
+	}
+	
 	/**
 	 * Export the configurations to a file
 	 * @param configFilePath

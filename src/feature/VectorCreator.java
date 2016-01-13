@@ -32,8 +32,8 @@ public class VectorCreator {
 		WVTFileInputList codeList=WVToolWrapper.extractCorpusFileList(codeCorpusDirPath);
 		
 		//Generate Vectors and save them to files
-		WVToolWrapper.generateVectors(bugVecFilePath, bugList, dic);
-		WVToolWrapper.generateVectors(codeVecFilePath, codeList, dic);
+		WVToolWrapper.generateVectors(bugVecFilePath, bugList, dic, "logtfidf");
+		WVToolWrapper.generateVectors(codeVecFilePath, codeList, dic, "logtfidf");
 		
 		//set the dictionary size
 		Config.getInstance().setDicSize(dic.getNumWords());

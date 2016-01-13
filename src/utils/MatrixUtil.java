@@ -51,6 +51,193 @@ public class MatrixUtil {
 	}
 	
 	/**
+	 * Convert the occurences map to other features map
+	 * the feature types can be "tf", "logtf", "df", "idf", "tfidf", "logtfidf"
+	 * Controlled by featureType
+	 * @param occurencesMap
+	 * @param featureType
+	 * @return
+	 */
+	public static HashMap<String, Matrix> convert(HashMap<String, Matrix> occurencesMap, String featureType){
+		HashMap<String, Matrix> outputMap = new HashMap<String, Matrix>();
+		//tf: occurences/corpus term occurences
+		if(featureType.toLowerCase().equals("tf")){
+			int rowCount=0;
+			int colCount=0;
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				rowCount=pair.getValue().getRowDimension();
+				colCount=pair.getValue().getColumnDimension();
+				break;
+			}
+			Matrix corpusTermOccurences=new Matrix(rowCount,colCount);
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				for(int i=0;i<corpusTermOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusTermOccurences.getColumnDimension();j++){
+						corpusTermOccurences.set(i, j, corpusTermOccurences.get(i, j)+pair.getValue().get(i, j));
+					}
+				}
+			}
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				Matrix tfMat=pair.getValue();
+				for(int i=0;i<corpusTermOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusTermOccurences.getColumnDimension();j++){
+						tfMat.set(i, j, tfMat.get(i,j)/corpusTermOccurences.get(i, j));
+					}
+				}
+				outputMap.put(pair.getKey(), tfMat);
+			}
+		}
+		
+		
+		
+		else if(featureType.toLowerCase().equals("logtf")){
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				Matrix tfMat=pair.getValue();
+				for(int i=0;i<tfMat.getRowDimension();i++){
+					for(int j=0;j<tfMat.getColumnDimension();j++){
+						if(tfMat.get(i, j)>0){
+							tfMat.set(i, j, Math.log(tfMat.get(i,j))+1);
+						}
+					}
+				}
+				outputMap.put(pair.getKey(), tfMat);
+			}
+		}
+		
+		
+		//df: document num/corpus document num
+		else if(featureType.toLowerCase().equals("df")){
+			int rowCount=0;
+			int colCount=0;
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				rowCount=pair.getValue().getRowDimension();
+				colCount=pair.getValue().getColumnDimension();
+				break;
+			}
+			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						if(pair.getValue().get(i, j)>0){
+							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+						}
+					}
+				}
+			}
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				Matrix tfMat=pair.getValue();
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						tfMat.set(i, j, corpusDocOccurences.get(i, j));
+					}
+				}
+				outputMap.put(pair.getKey(), tfMat);
+			}
+		}
+		
+		
+		//idf: log(corpus document num/document num)
+		else if(featureType.toLowerCase().equals("idf")){
+			int rowCount=0;
+			int colCount=0;
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				rowCount=pair.getValue().getRowDimension();
+				colCount=pair.getValue().getColumnDimension();
+				break;
+			}
+			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						if(pair.getValue().get(i, j)>0){
+							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+						}
+					}
+				}
+			}
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				Matrix tfMat=pair.getValue();
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						if(corpusDocOccurences.get(i, j)>0){
+							tfMat.set(i, j, Math.log(corpusDocOccurences.get(i, j))/occurencesMap.size());
+						}
+					}
+				}
+				outputMap.put(pair.getKey(), tfMat);
+			}
+		}
+		
+		//tfidf: tf*idf
+		else if(featureType.toLowerCase().equals("tfidf")){
+			int rowCount=0;
+			int colCount=0;
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				rowCount=pair.getValue().getRowDimension();
+				colCount=pair.getValue().getColumnDimension();
+				break;
+			}
+			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			Matrix corpusTermOccurences=new Matrix(rowCount,colCount);
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						corpusTermOccurences.set(i, j, corpusTermOccurences.get(i, j)+pair.getValue().get(i, j));
+						if(pair.getValue().get(i, j)>0){
+							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+						}
+					}
+				}
+			}
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				Matrix tfMat=pair.getValue();
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						if(corpusDocOccurences.get(i, j)>0){
+							tfMat.set(i, j, (Math.log(corpusDocOccurences.get(i, j))/occurencesMap.size())*(tfMat.get(i, j)/corpusTermOccurences.get(i,j)));
+						}
+					}
+				}
+				outputMap.put(pair.getKey(), tfMat);
+			}
+		}
+		
+		//logtfidf: logtf*idf
+		else if(featureType.toLowerCase().equals("logtfidf")){
+			int rowCount=0;
+			int colCount=0;
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				rowCount=pair.getValue().getRowDimension();
+				colCount=pair.getValue().getColumnDimension();
+				break;
+			}
+			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						if(pair.getValue().get(i, j)>0){
+							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+						}
+					}
+				}
+			}
+			for(Entry<String, Matrix> pair: occurencesMap.entrySet()){
+				Matrix tfMat=pair.getValue();
+				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+						if(corpusDocOccurences.get(i, j)>0 && tfMat.get(i, j)>0){
+							tfMat.set(i, j, (Math.log(corpusDocOccurences.get(i, j))/occurencesMap.size())*(Math.log(tfMat.get(i, j))+1));
+						}
+					}
+				}
+				outputMap.put(pair.getKey(), tfMat);
+			}
+		}
+		return outputMap;
+	}
+	
+	
+	/**
 	 * Compute similarity matrix for the two given list of vectors
 	 * @param idMatPairs1
 	 * @param idMatPairs2
@@ -71,7 +258,27 @@ public class MatrixUtil {
 		return simMat;
 	}
 	
-	
+	/**
+	 * save the vector list to file
+	 * @param srcFilePath
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	public static void saveVectors(HashMap<String, Matrix> map, String dstFilePath) throws Exception{
+		FileUtils.deleteExistingFile(dstFilePath);
+		for(Entry<String, Matrix> pair: map.entrySet()){
+			StringBuffer buf=new StringBuffer();
+			buf.append(pair.getKey()+";");			
+			Matrix mat=pair.getValue();
+			for(int i=0;i< mat.getRowDimension();i++){
+				for(int j=0;j<mat.getColumnDimension();j++){
+					buf.append(" "+j+":"+mat.get(i, j));
+				}
+			}
+			FileUtils.write_append2file(buf.toString()+"\n", dstFilePath);
+		}
+	}
 	/**
 	 * Compute the similarity matrix given a list of vectors
 	 * @param idFilePairs
@@ -128,6 +335,7 @@ public class MatrixUtil {
 	 * @throws IOException
 	 */
 	public static void exportSimilarityMatrix(HashMap<String, Matrix> idMatPairs, String dstFilePath, int dicSize) throws IOException{
+		FileUtils.deleteExistingFile(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		for(String id: idMatPairs.keySet()){
 			buf.append(id+"\t");
@@ -152,6 +360,7 @@ public class MatrixUtil {
 	 * @throws IOException
 	 */
 	public static void exportMatrix(HashMap<String, Matrix> rowMap, HashMap<String, Matrix> colMap, Matrix mat, String dstFilePath) throws IOException{
+		FileUtils.deleteExistingFile(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		//First line saves the row ids
 		for(String id: rowMap.keySet()){
@@ -182,6 +391,7 @@ public class MatrixUtil {
 	 * @throws IOException
 	 */
 	public static void exportMatrix(ArrayList<String> rowList, ArrayList<String> colList, Matrix mat, String dstFilePath) throws IOException{
+		FileUtils.deleteExistingFile(dstFilePath);
 		StringBuffer buf=new StringBuffer();
 		//First line saves the row ids
 		for(String id: rowList){

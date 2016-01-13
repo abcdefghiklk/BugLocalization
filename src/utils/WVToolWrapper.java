@@ -3,7 +3,10 @@ package utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
+import Jama.Matrix;
+import config.Config;
 import edu.udo.cs.wvtool.config.WVTConfigException;
 import edu.udo.cs.wvtool.config.WVTConfiguration;
 import edu.udo.cs.wvtool.config.WVTConfigurationFact;
@@ -14,6 +17,7 @@ import edu.udo.cs.wvtool.generic.stemmer.PorterStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.WVTStemmer;
 import edu.udo.cs.wvtool.generic.vectorcreation.TFIDF;
 import edu.udo.cs.wvtool.generic.vectorcreation.TermFrequency;
+import edu.udo.cs.wvtool.generic.vectorcreation.TermOccurrences;
 import edu.udo.cs.wvtool.main.WVTDocumentInfo;
 import edu.udo.cs.wvtool.main.WVTFileInputList;
 import edu.udo.cs.wvtool.main.WVTool;
@@ -74,6 +78,9 @@ public class WVToolWrapper {
 //		WVTStemmer stemmer = new PorterStemmerWrapper();
 //		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER, new WVTConfigurationFact(stemmer));
 		WVTWordList dictionary = wvt.createWordList(list, config);
+		if(Config.getInstance().getMinCutoffFrequency()>0 && Config.getInstance().getMaxCutoffFrequency()>0){
+			dictionary.pruneByFrequency(Config.getInstance().getMinCutoffFrequency(), Config.getInstance().getMaxCutoffFrequency());
+		}
 		return dictionary;
 	}
 	
@@ -94,7 +101,7 @@ public class WVToolWrapper {
 	 * @param dictionary
 	 * @throws Exception
 	 */
-	public static void generateVectors(String dstFilePath, WVTFileInputList list, WVTWordList dictionary) throws Exception{
+	public static void generateVectors(String dstFilePath, WVTFileInputList list, WVTWordList dictionary, String featureType) throws Exception{
 		WVTool wvt= new WVTool(false);
 		if(!new File(dstFilePath).isFile()){
 			new File(dstFilePath).createNewFile();
@@ -102,9 +109,13 @@ public class WVToolWrapper {
 		WordVectorWriter wvw= new WordVectorWriter(new FileWriter(dstFilePath),true);
 		WVTConfiguration config = new WVTConfiguration();
 		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw));
-		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TFIDF()));
+		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TermOccurrences()));
 		wvt.createVectors(list, config, dictionary);
 		wvw.close();
+		HashMap<String, Matrix> occurencesMap=MatrixUtil.loadVectors(dstFilePath, dictionary.getNumWords());
+		HashMap<String, Matrix> termFrequencyMap= MatrixUtil.convert(occurencesMap,featureType);
+		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath);
+
 	}
 	
 	private static void showHelp() {
@@ -157,7 +168,7 @@ public class WVToolWrapper {
 			WVTWordList dictionary=extractCorpusDic(list);
 //			System.out.println(dictionary.getNumDocuments());
 			saveCorpusDic(dictionary,corpusDicFilePath);
-			generateVectors(bugVectorFilePath,list,dictionary);
+			generateVectors(bugVectorFilePath,list,dictionary,"tfidf");
 		}
 	}
 
