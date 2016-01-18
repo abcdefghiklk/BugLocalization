@@ -61,17 +61,17 @@ public class MatrixUtil {
 	}
 	
 	/**
-	 * Convert the occurences map to other features map
+	 * Convert the occurrences map to other features map
 	 * the feature types can be "tf", "logtf", "df", "idf", "tfidf", "logtfidf"
 	 * Controlled by featureType
-	 * @param occurencesMap
+	 * @param occurrencesMap
 	 * @param featureType
 	 * @return
 	 */
 	public static HashMap<String, Matrix> convert(HashMap<String, Matrix> occurrencesMap, HashMap<String, Matrix> corpusOccurrencesMap, String featureType){
 		HashMap<String, Matrix> outputMap = new HashMap<String, Matrix>();
 		
-		//tf: occurences/document term occurences
+		//tf: occurrences/document term occurrences
 		if(featureType.toLowerCase().equals("tf")){
 			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
 				Matrix mat=pair.getValue();
@@ -91,7 +91,7 @@ public class MatrixUtil {
 		}
 		
 		
-		//logtf: log(occurences)
+		//logtf: log(occurrences)
 		else if(featureType.toLowerCase().equals("logtf")){
 			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
 				Matrix mat=pair.getValue();
@@ -116,21 +116,21 @@ public class MatrixUtil {
 				colCount=pair.getValue().getColumnDimension();
 				break;
 			}
-			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
 			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
 						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
 						}
 					}
 				}
 			}
 			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
 				Matrix mat=pair.getValue();
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
-						mat.set(i, j, corpusDocOccurences.get(i, j));
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
+						mat.set(i, j, corpusDocOccurrences.get(i, j));
 					}
 				}
 				outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
@@ -147,22 +147,22 @@ public class MatrixUtil {
 				colCount=pair.getValue().getColumnDimension();
 				break;
 			}
-			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
 			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
 						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
 						}
 					}
 				}
 			}
 			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
 				Matrix mat=pair.getValue();
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
-						if(corpusDocOccurences.get(i, j)>0){
-							mat.set(i, j, Math.log((corpusOccurrencesMap.size()+0.0d)/corpusDocOccurences.get(i, j)));
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
+						if(corpusDocOccurrences.get(i, j)>0){
+							mat.set(i, j, Math.log((corpusOccurrencesMap.size()+0.0d)/corpusDocOccurrences.get(i, j)));
 						}
 					}
 				}
@@ -179,12 +179,12 @@ public class MatrixUtil {
 				colCount=pair.getValue().getColumnDimension();
 				break;
 			}
-			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
 			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
 						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
 						}
 					}
 				}
@@ -199,8 +199,8 @@ public class MatrixUtil {
 				}
 				for(int i=0;i<mat.getRowDimension();i++){
 					for(int j=0;j<mat.getColumnDimension();j++){
-						if(corpusDocOccurences.get(i, j)>0){
-							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurences.get(i, j)))*(mat.get(i, j)/docTermCount));
+						if(corpusDocOccurrences.get(i, j)>0){
+							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(mat.get(i, j)/docTermCount));
 						}
 					}
 				}
@@ -217,22 +217,22 @@ public class MatrixUtil {
 				colCount=pair.getValue().getColumnDimension();
 				break;
 			}
-			Matrix corpusDocOccurences=new Matrix(rowCount,colCount);
+			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
 			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
 						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurences.set(i, j, corpusDocOccurences.get(i, j)+1);
+							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
 						}
 					}
 				}
 			}
 			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
 				Matrix mat=pair.getValue();
-				for(int i=0;i<corpusDocOccurences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurences.getColumnDimension();j++){
-						if(corpusDocOccurences.get(i, j)>0 && mat.get(i, j)>0){
-							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurences.get(i, j)))*(Math.log(mat.get(i, j))+1));
+				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
+						if(corpusDocOccurrences.get(i, j)>0 && mat.get(i, j)>0){
+							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(Math.log(mat.get(i, j))+1));
 						}
 					}
 				}
@@ -636,7 +636,7 @@ public class MatrixUtil {
 		
 //		Matrix simMat=computeSimilarityMatrix(map1, map2, 3);
 //		simMat.print(5, 2);
-//		Matrix mat=Matrix.random(1, 3);
+//		Matrix mat=Matrix.random(1, 3); 
 //		mat.print(5, 2);
 //		Matrix mat2=Matrix.random(1, 3);
 //		mat2.print(5, 2);
