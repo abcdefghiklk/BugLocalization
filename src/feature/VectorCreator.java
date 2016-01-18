@@ -18,22 +18,20 @@ public class VectorCreator {
 	 * @param codeCorpusDirPath
 	 * @param bugVecFilePath
 	 * @param codeVecFilePath
+	 * @param featureType
 	 * @throws Exception
 	 */
-	public static void create(String bugCorpusDirPath, String codeCorpusDirPath, String bugVecFilePath, String codeVecFilePath) throws Exception{
-		
-		//Extract dictionaries for bug and code corpus
-		String []bugAndCodeDirPaths={bugCorpusDirPath,codeCorpusDirPath};
-		WVTFileInputList bugAndCodeList=WVToolWrapper.extractCorpusFileList(bugAndCodeDirPaths);
-		WVTWordList dic=WVToolWrapper.extractCorpusDic(bugAndCodeList);
+	public static void create(String bugCorpusDirPath, String codeCorpusDirPath, String bugVecFilePath, String codeVecFilePath, String featureType) throws Exception{
 		
 		//Extract the bug list and code list
 		WVTFileInputList bugList=WVToolWrapper.extractCorpusFileList(bugCorpusDirPath);
 		WVTFileInputList codeList=WVToolWrapper.extractCorpusFileList(codeCorpusDirPath);
+		WVTWordList dic=WVToolWrapper.extractCorpusDic(codeList);
 		
 		//Generate Vectors and save them to files
-		WVToolWrapper.generateVectors(bugVecFilePath, bugList, dic, "logtfidf");
-		WVToolWrapper.generateVectors(codeVecFilePath, codeList, dic, "logtfidf");
+		WVToolWrapper.generateCorpusVectors(codeVecFilePath, codeList, dic);
+		WVToolWrapper.generateVectors(bugVecFilePath, bugList, dic, codeVecFilePath, featureType);
+		WVToolWrapper.generateVectors(codeVecFilePath, codeList, dic, codeVecFilePath, featureType);
 		
 		//set the dictionary size
 		Config.getInstance().setDicSize(dic.getNumWords());

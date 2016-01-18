@@ -32,7 +32,7 @@ public class RevisedVectorSpaceModel {
 		
 		String bugVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "bugVec").toString();
 		String codeVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "codeVec").toString();
-		VectorCreator.create(Paths.get(bugCorpusDirPath,"information").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath);
+		VectorCreator.create(Paths.get(bugCorpusDirPath,"description").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath, "logtfidf");
 		
 		String simMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "revisedVSMScore").toString();
 		RevisedVSMScore.generate(bugVecFilePath, codeVecFilePath, codeLengthFilePath,simMatFilePath);

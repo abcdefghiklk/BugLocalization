@@ -41,7 +41,7 @@ public class BugLocator {
 		
 		String bugVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "bugVec").toString();
 		String codeVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "codeVec").toString();
-		VectorCreator.create(Paths.get(bugCorpusDirPath,"information").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath);
+		VectorCreator.create(Paths.get(bugCorpusDirPath,"description").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath, "logtfidf");
 		
 		String simMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "revisedVSMScore").toString();
 		RevisedVSMScore.generate(bugVecFilePath, codeVecFilePath, codeLengthFilePath,simMatFilePath);
@@ -112,7 +112,7 @@ public class BugLocator {
 			new File(evaluationDirPath).mkdir();
 		}
 		Config.getInstance().setPaths(datasetDirPath, bugLogFilePath, intermediateDirPath, outputFilePath);
-		Config.getInstance().setFeatures(new String(), true, true, 0);
+		Config.getInstance().setFeatures(new String(), true, true, 0.5);
 		Config.getInstance().setEvaluations(evaluationDirPath, true, true, 5, true);
 		Config.getInstance().exportConfig(configFilePath);
 		run();

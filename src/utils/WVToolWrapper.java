@@ -95,13 +95,13 @@ public class WVToolWrapper {
 	}
 	
 	/**
-	 * Generate a vector for each file given the dictionary
+	 * Generate the corpus vectors and save them to file
 	 * @param dstFilePath
 	 * @param list
 	 * @param dictionary
 	 * @throws Exception
 	 */
-	public static void generateVectors(String dstFilePath, WVTFileInputList list, WVTWordList dictionary, String featureType) throws Exception{
+	public static void generateCorpusVectors(String dstFilePath, WVTFileInputList list, WVTWordList dictionary) throws Exception {
 		WVTool wvt= new WVTool(false);
 		if(!new File(dstFilePath).isFile()){
 			new File(dstFilePath).createNewFile();
@@ -112,8 +112,30 @@ public class WVToolWrapper {
 		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TermOccurrences()));
 		wvt.createVectors(list, config, dictionary);
 		wvw.close();
-		HashMap<String, Matrix> occurencesMap=MatrixUtil.loadVectors(dstFilePath, dictionary.getNumWords());
-		HashMap<String, Matrix> termFrequencyMap= MatrixUtil.convert(occurencesMap,featureType);
+	}
+	
+	
+	/**
+	 * Generate a vector for each file given the dictionary
+	 * @param dstFilePath
+	 * @param list
+	 * @param dictionary
+	 * @throws Exception
+	 */
+	public static void generateVectors(String dstFilePath, WVTFileInputList list, WVTWordList dictionary, String corpusVecPath, String featureType) throws Exception{
+		WVTool wvt= new WVTool(false);
+		if(!new File(dstFilePath).isFile()){
+			new File(dstFilePath).createNewFile();
+		}
+		WordVectorWriter wvw= new WordVectorWriter(new FileWriter(dstFilePath),true);
+		WVTConfiguration config = new WVTConfiguration();
+		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw));
+		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TermOccurrences()));
+		wvt.createVectors(list, config, dictionary);
+		wvw.close();
+		HashMap<String, Matrix> occurrencesMap = MatrixUtil.loadVectors(dstFilePath, dictionary.getNumWords());
+		HashMap<String, Matrix> corpusOccurrencesMap = MatrixUtil.loadVectors(corpusVecPath, dictionary.getNumWords());
+		HashMap<String, Matrix> termFrequencyMap = MatrixUtil.convert(occurrencesMap,corpusOccurrencesMap,featureType);
 		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath);
 
 	}
@@ -168,7 +190,7 @@ public class WVToolWrapper {
 			WVTWordList dictionary=extractCorpusDic(list);
 //			System.out.println(dictionary.getNumDocuments());
 			saveCorpusDic(dictionary,corpusDicFilePath);
-			generateVectors(bugVectorFilePath,list,dictionary,"tfidf");
+			generateVectors(bugVectorFilePath,list,dictionary,bugVectorFilePath,"tfidf");
 		}
 	}
 

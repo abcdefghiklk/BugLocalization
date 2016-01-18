@@ -30,14 +30,14 @@ public class SimiScore {
 		for(int i=0;i<bugVecList.size();i++){
 			for(int j=0;j<codeVecList.size();j++){
 				HashMap<String,Integer> idNumPairs=BugFeatureExtractor.getPastBugsContainingTargetFile(codeClassArray[j], bugIDArray[i], bugList);			
-				if(idNumPairs.size()>5 && !flag){
-					System.out.println(codeClassArray[j]);
-					System.out.println(bugIDArray[i]);
-					for (Entry<String, Integer> pair:idNumPairs.entrySet()){
-						System.out.println(pair.getKey()+"\t"+pair.getValue());	
-					}
-					flag=true;
-				}
+//				if(idNumPairs.size()>5 && !flag){
+//					System.out.println(codeClassArray[j]);
+//					System.out.println(bugIDArray[i]);
+//					for (Entry<String, Integer> pair:idNumPairs.entrySet()){
+//						System.out.println(pair.getKey()+"\t"+pair.getValue());	
+//					}
+//					flag=true;
+//				}
 				double simiScore=0.0d;
 				for(Entry<String, Integer> onePair:idNumPairs.entrySet()){
 					int index=MatrixUtil.getIndex(onePair.getKey(),bugIDArray);

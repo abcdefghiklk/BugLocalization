@@ -38,7 +38,6 @@ public class CodeLength {
 				maxVal=value;
 			}
 		}
-		
 		//scale each value using the maximum and minimum value
 		for(Entry<String, Integer> pair: originalPairs.entrySet()){
 			double normalizedValue=(pair.getValue()-minVal+0.0d)/(maxVal-minVal+0.0d);
