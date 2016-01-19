@@ -60,9 +60,10 @@ public class CodeDataProcessor {
 			String []terms= parser.getContent();
 			String fileContent=new String();
 			for(String term:terms){
-				String stemmedTerm = Stem.stem(term.toLowerCase());
+//				String stemmedTerm = Stem.stem(term.toLowerCase());
+				term = term.toLowerCase();
 				if(!(Stopword.isKeyword(term) || Stopword.isEnglishStopword(term))){
-					fileContent+=stemmedTerm+" ";
+					fileContent+=term+" ";
 				}
 			}
 			oneCodeFile.setContent(fileContent);

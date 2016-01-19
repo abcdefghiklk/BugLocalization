@@ -193,13 +193,10 @@ public class BugDataProcessor {
 		for (BugRecord _bug: bugList){
 			String summaryFilePath = Paths.get(corpusDirPath,"summary", _bug.getBugId()).toString();
 			FileUtils.deleteExistingFile(summaryFilePath);
-//			FileWriter summaryWriter = new FileWriter(Paths.get(corpusDirPath,"summary", _bug.getBugId()).toString());
 			String descriptionFilePath = Paths.get(corpusDirPath,"description", _bug.getBugId()).toString();
 			FileUtils.deleteExistingFile(summaryFilePath);
-//			FileWriter descriptionWriter = new FileWriter(Paths.get(corpusDirPath,"description", _bug.getBugId()).toString());
 			String informationFilePath = Paths.get(corpusDirPath,"information", _bug.getBugId()).toString();
 			FileUtils.deleteExistingFile(informationFilePath);
-//			FileWriter informationWriter = new FileWriter(Paths.get(corpusDirPath,"information", _bug.getBugId()).toString());
 			
 			String [] bugSummaryWords = Splitter.splitNatureLanguage(_bug.getBugSummary());
 			String [] bugDescriptionWords = Splitter.splitNatureLanguage(_bug.getBugDescription());
@@ -209,8 +206,8 @@ public class BugDataProcessor {
 			
 			//create bug summary corpus and part of information corpus
 			for (String word : bugSummaryWords) {
-				word = Stem.stem(word.toLowerCase());
-//				word = word.toLowerCase();
+//				word = Stem.stem(word.toLowerCase());
+				word = word.toLowerCase();
 				if (!Stopword.isEnglishStopword(word)) {
 					summaryBuffer.append(word + " ");
 					informationBuffer.append(word + " ");
@@ -219,8 +216,8 @@ public class BugDataProcessor {
 			
 			//create bug description corpus and part of information corpus
 			for (String word : bugDescriptionWords) {
-				word = Stem.stem(word.toLowerCase());
-//				word = word.toLowerCase();
+//				word = Stem.stem(word.toLowerCase());
+				word = word.toLowerCase();
 				if (!Stopword.isEnglishStopword(word)) {
 					descriptionBuffer.append(word + " ");
 					informationBuffer.append(word + " ");

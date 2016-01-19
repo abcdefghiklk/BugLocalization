@@ -71,173 +71,81 @@ public class MatrixUtil {
 	public static HashMap<String, Matrix> convert(HashMap<String, Matrix> occurrencesMap, HashMap<String, Matrix> corpusOccurrencesMap, String featureType){
 		HashMap<String, Matrix> outputMap = new HashMap<String, Matrix>();
 		
-		//tf: occurrences/document term occurrences
-		if(featureType.toLowerCase().equals("tf")){
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				Matrix mat=pair.getValue();
-				double docTermCount=0.0d;
-				for(int i=0;i<mat.getRowDimension();i++){
-					for(int j=0;j<mat.getColumnDimension();j++){
-						docTermCount+=mat.get(i, j);
+		//constructing term document frequency vectors
+		int rowCount=0;
+		int colCount=0;
+		for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
+			rowCount=pair.getValue().getRowDimension();
+			colCount=pair.getValue().getColumnDimension();
+			break;
+		}
+		Matrix corpusDocOccurrences = new Matrix(rowCount,colCount);
+		for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
+			for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
+				for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
+					if(pair.getValue().get(i, j)>0){
+						corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
 					}
 				}
-				for(int i=0;i<mat.getRowDimension();i++){
-					for(int j=0;j<mat.getColumnDimension();j++){
+			}
+		}
+		
+		//constructing vectors for each input feature type
+		for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
+			Matrix mat=pair.getValue();
+			double docTermCount=0.0d;
+			for(int i=0;i<mat.getRowDimension();i++){
+				for(int j=0;j<mat.getColumnDimension();j++){
+					docTermCount+=mat.get(i, j);
+				}
+			}
+			for(int i=0;i<mat.getRowDimension();i++){
+				for(int j=0;j<mat.getColumnDimension();j++){
+					
+					//tf: Occurrence/documentSize 
+					if(featureType.toLowerCase().equals("tf")){
 						mat.set(i, j, mat.get(i, j)/docTermCount);
 					}
-				}
-				outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
-			}
-		}
-		
-		
-		//logtf: log(occurrences)
-		else if(featureType.toLowerCase().equals("logtf")){
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				Matrix mat=pair.getValue();
-				for(int i=0;i<mat.getRowDimension();i++){
-					for(int j=0;j<mat.getColumnDimension();j++){
-						if(mat.get(i, j)>0){
-							mat.set(i, j, Math.log(mat.get(i,j))+1);
-						}
+					
+					//logtf: log(Occurrence)+1
+					else if(featureType.toLowerCase().equals("logtf")){
+						mat.set(i, j,  Math.log(mat.get(i,j))+1);
 					}
-				}
-				outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
-			}
-		}
-		
-		
-		//df: document num/corpus document num
-		else if(featureType.toLowerCase().equals("df")){
-			int rowCount=0;
-			int colCount=0;
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				rowCount=pair.getValue().getRowDimension();
-				colCount=pair.getValue().getColumnDimension();
-				break;
-			}
-			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
-						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
-						}
+					
+					//df: documentNumOccurrence/corpusSize
+					else if(featureType.toLowerCase().equals("df")){
+						mat.set(i, j, corpusDocOccurrences.get(i, j)/(corpusOccurrencesMap.size()+0.0d));
 					}
-				}
-			}
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				Matrix mat=pair.getValue();
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
-						mat.set(i, j, corpusDocOccurrences.get(i, j));
-					}
-				}
-				outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
-			}
-		}
-		
-		
-		//idf: log(corpus document num/document num)
-		else if(featureType.toLowerCase().equals("idf")){
-			int rowCount=0;
-			int colCount=0;
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				rowCount=pair.getValue().getRowDimension();
-				colCount=pair.getValue().getColumnDimension();
-				break;
-			}
-			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
-						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
-						}
-					}
-				}
-			}
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				Matrix mat=pair.getValue();
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
+					
+					//idf: corpusSize/documentNumOccurrence
+					else if(featureType.toLowerCase().equals("idf")){
 						if(corpusDocOccurrences.get(i, j)>0){
 							mat.set(i, j, Math.log((corpusOccurrencesMap.size()+0.0d)/corpusDocOccurrences.get(i, j)));
 						}
 					}
-				}
-				outputMap.put(pair.getKey(), mat);
-			}
-		}
-		
-		//tfidf: tf*idf
-		else if(featureType.toLowerCase().equals("tfidf")){
-			int rowCount=0;
-			int colCount=0;
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				rowCount=pair.getValue().getRowDimension();
-				colCount=pair.getValue().getColumnDimension();
-				break;
-			}
-			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
-						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
+					
+					//tfidf: tf*idf
+					else if(featureType.toLowerCase().equals("tfidf")){
+						if(corpusDocOccurrences.get(i, j)>0){
+							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(mat.get(i, j)/docTermCount));
 						}
 					}
-				}
-			}
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				Matrix mat=pair.getValue();
-				double docTermCount=0.0d;
-				for(int i=0;i<mat.getRowDimension();i++){
-					for(int j=0;j<mat.getColumnDimension();j++){
-						docTermCount+=mat.get(i, j);
+					
+					//logtfidf:logtf*idf
+					else if(featureType.toLowerCase().equals("logtfidf")){
+						if(corpusDocOccurrences.get(i, j)>0 && mat.get(i, j)>0){
+							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(Math.log(mat.get(i, j))+1));
+						}
 					}
-				}
-				for(int i=0;i<mat.getRowDimension();i++){
-					for(int j=0;j<mat.getColumnDimension();j++){
+					else{
+						System.out.println("The input feature type is invalid! The default type tfidf will be used");
 						if(corpusDocOccurrences.get(i, j)>0){
 							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(mat.get(i, j)/docTermCount));
 						}
 					}
 				}
-				outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
 			}
-		}
-		
-		//logtfidf: logtf*idf
-		else if(featureType.toLowerCase().equals("logtfidf")){
-			int rowCount=0;
-			int colCount=0;
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				rowCount=pair.getValue().getRowDimension();
-				colCount=pair.getValue().getColumnDimension();
-				break;
-			}
-			Matrix corpusDocOccurrences=new Matrix(rowCount,colCount);
-			for(Entry<String, Matrix> pair: corpusOccurrencesMap.entrySet()){
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
-						if(pair.getValue().get(i, j)>0){
-							corpusDocOccurrences.set(i, j, corpusDocOccurrences.get(i, j)+1);
-						}
-					}
-				}
-			}
-			for(Entry<String, Matrix> pair: occurrencesMap.entrySet()){
-				Matrix mat=pair.getValue();
-				for(int i=0;i<corpusDocOccurrences.getRowDimension();i++){
-					for(int j=0;j<corpusDocOccurrences.getColumnDimension();j++){
-						if(corpusDocOccurrences.get(i, j)>0 && mat.get(i, j)>0){
-							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(Math.log(mat.get(i, j))+1));
-						}
-					}
-				}
-				outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
-			}
+			outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
 		}
 		return outputMap;
 	}

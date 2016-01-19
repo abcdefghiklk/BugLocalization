@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -25,23 +26,84 @@ public class CodeLength {
 	 * @return
 	 */
 	public static HashMap<String, Double> normalize(HashMap<String, Integer> originalPairs){
+		HashMap<String, Integer> rawData=new HashMap<String, Integer>();
+		rawData.putAll(originalPairs);
 		HashMap<String, Double> normalizedPairs=new HashMap<String, Double>();
-		
-		//Get the maximum and the minimum of the values 
+		//exclude outliers using 3-sigma rule
+		int sum;
+		double avg;
+		double squaredError;
+		double deviation;
 		int maxVal=0;
-		int minVal=-1;
-		for(int value:originalPairs.values()){
-			if(minVal==-1 || value<minVal){
-				minVal=value;
+		int minVal=0;		
+		boolean hasOutlier=true;
+		int iter=0;
+		while(hasOutlier && iter<5){
+			hasOutlier=false;
+			sum=0;
+			for(int value:rawData.values()){
+				sum+=value;
 			}
-			if(maxVal<value){
-				maxVal=value;
+			avg=(sum+0.0d)/rawData.size();
+			squaredError= 0.0d;
+			for(int value:rawData.values()){
+				squaredError+=(value-avg)*(value-avg);
 			}
+			deviation= Math.sqrt(squaredError/rawData.size());
+			System.out.println("deviation="+deviation+" avg="+avg);
+			maxVal=Integer.MIN_VALUE;
+			minVal=Integer.MAX_VALUE;
+			ArrayList<String> removeItems=new ArrayList<String>();
+			for(Entry<String, Integer> pair:rawData.entrySet()){
+				int value=pair.getValue();
+				if(value<(avg+3*deviation) && value>(avg-3*deviation)){
+					if(value<minVal){
+						minVal=value;
+					}
+					if(maxVal<value){
+						maxVal=value;
+					}
+				}
+				else{
+					removeItems.add(pair.getKey());
+					hasOutlier=true;
+				}
+			}
+			if(hasOutlier){
+				for(String oneItem:removeItems){
+					rawData.remove(oneItem);
+				}
+				iter++;
+			}
+			System.out.println(rawData.size());
 		}
+		System.out.println(originalPairs.size());	
+//		//Get the maximum and the minimum of the values 
+//		int maxVal=0;
+//		int minVal=-1;
+//		for(int value:originalPairs.values()){
+//			if(minVal==-1 || value<minVal){
+//				minVal=value;
+//			}
+//			if(maxVal<value){
+//				maxVal=value;
+//			}
+//		}
 		//scale each value using the maximum and minimum value
+//		System.out.println(maxVal);
+//		System.out.println(minVal);
+//		System.out.println(rawData.size());
 		for(Entry<String, Integer> pair: originalPairs.entrySet()){
-			double normalizedValue=(pair.getValue()-minVal+0.0d)/(maxVal-minVal+0.0d);
-			normalizedPairs.put(pair.getKey(), normalizedValue);
+			if(pair.getValue()>maxVal){
+				normalizedPairs.put(pair.getKey(), 1.0d);
+			}
+			else if(pair.getValue()<minVal){
+				normalizedPairs.put(pair.getKey(), 0.0d);
+			}
+			else{
+				double normalizedValue=(pair.getValue()-minVal+0.0d)/(maxVal-minVal+0.0d);
+				normalizedPairs.put(pair.getKey(), normalizedValue);
+			}
 		}
 		return normalizedPairs;
 	}
@@ -156,7 +218,18 @@ public class CodeLength {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		HashMap<String, Integer> testList=new HashMap<String, Integer>();
+		testList.put("a", 1);
+		testList.put("b", 2);
+		testList.put("c", 2);
+		testList.put("d", 2);
+		testList.put("e", 2);
+		testList.put("f", 2);
+		testList.put("g", 30);
+		HashMap<String, Double> normalizedList = normalize(testList);
+		for(Entry<String, Double> pair: normalizedList.entrySet()){
+			System.out.println(pair.getKey()+"\t"+pair.getValue());
+		}
 	}
 
 }
