@@ -31,14 +31,14 @@ public class CodeLength {
 		HashMap<String, Double> normalizedPairs=new HashMap<String, Double>();
 		//exclude outliers using 3-sigma rule
 		int sum;
-		double avg;
+		double avg=0;
 		double squaredError;
-		double deviation;
+		double deviation=0;
 		int maxVal=0;
 		int minVal=0;		
 		boolean hasOutlier=true;
 		int iter=0;
-		while(hasOutlier && iter<5){
+		while(hasOutlier && iter<1){
 			hasOutlier=false;
 			sum=0;
 			for(int value:rawData.values()){
@@ -93,15 +93,23 @@ public class CodeLength {
 //		System.out.println(maxVal);
 //		System.out.println(minVal);
 //		System.out.println(rawData.size());
+		int min=0;
+		if(avg-3*deviation>0){
+			min=(int)(avg-3*deviation);
+		}
+
 		for(Entry<String, Integer> pair: originalPairs.entrySet()){
 			if(pair.getValue()>maxVal){
 				normalizedPairs.put(pair.getKey(), 1.0d);
 			}
-			else if(pair.getValue()<minVal){
-				normalizedPairs.put(pair.getKey(), 0.0d);
+			else if(pair.getValue()<min){
+				normalizedPairs.put(pair.getKey(), 0.5d);
 			}
 			else{
-				double normalizedValue=(pair.getValue()-minVal+0.0d)/(maxVal-minVal+0.0d);
+				double normalizedValue=6 * (pair.getValue()-min+0.0d)/(maxVal-min+0.0d);
+//				if(normalizedValue>6){
+//					normalizedValue=6;
+//				}
 				normalizedPairs.put(pair.getKey(), normalizedValue);
 			}
 		}
@@ -121,6 +129,9 @@ public class CodeLength {
 			double transformedValue=0.0d;
 			if(functionType.toLowerCase().equals("logistic")){
 				transformedValue=logistic(pair.getValue(),1);
+				if(transformedValue<0.5){
+					transformedValue=0.5;
+				}
 			}
 			else if(functionType.toLowerCase().equals("exponential")){
 				transformedValue=exponential(pair.getValue());

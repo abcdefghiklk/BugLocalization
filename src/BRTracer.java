@@ -10,11 +10,11 @@ public class BRTracer {
         /* You need to manually specify three program arguments in Eclipse or Intellij before running */
 		args=new String[6];
 		args[0]="-d";
-		args[1]="C:/Users/dell/Dropbox/Open University/OU Research/codes&Datas/BRTracer/Dataset";
+		args[1]="C:/Users/ql29/Documents/EClipse/Dataset";
 		args[2]="-p";
 		args[3]="swt";
 		args[4]="-o";
-		args[5]="C:/Users/dell/Dropbox/Open University/OU Research/codes&Datas/BRTracer/result.txt";
+		args[5]="C:/Users/ql29/Documents/EClipse/Dataset/result.txt";
 		try {
 			if (args.length == 0) {
 				showHelp();
