@@ -104,7 +104,7 @@ public class MatrixUtil {
 					
 					//tf: Occurrence/documentSize 
 					if(featureType.toLowerCase().equals("tf")){
-						mat.set(i, j, mat.get(i, j)/docTermCount);
+						mat.set(i, j, mat.get(i, j));
 					}
 					
 					//logtf: log(Occurrence)+1
@@ -114,11 +114,13 @@ public class MatrixUtil {
 					
 					//df: documentNumOccurrence/corpusSize
 					else if(featureType.toLowerCase().equals("df")){
-						mat.set(i, j, corpusDocOccurrences.get(i, j)/(corpusOccurrencesMap.size()+0.0d));
+//						System.out.println("program goes to df");
+						mat.set(i, j, corpusDocOccurrences.get(i, j));
 					}
 					
 					//idf: corpusSize/documentNumOccurrence
 					else if(featureType.toLowerCase().equals("idf")){
+//						System.out.println("program goes to idf");
 						if(corpusDocOccurrences.get(i, j)>0){
 							mat.set(i, j, Math.log((corpusOccurrencesMap.size()+0.0d)/corpusDocOccurrences.get(i, j)));
 						}
@@ -126,6 +128,7 @@ public class MatrixUtil {
 					
 					//tfidf: tf*idf
 					else if(featureType.toLowerCase().equals("tfidf")){
+//						System.out.println("program goes to tfidf");
 						if(corpusDocOccurrences.get(i, j)>0){
 							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(mat.get(i, j)/docTermCount));
 						}
@@ -133,6 +136,7 @@ public class MatrixUtil {
 					
 					//logtfidf:logtf*idf
 					else if(featureType.toLowerCase().equals("logtfidf")){
+//						System.out.println("program goes to logtfidf");
 						if(corpusDocOccurrences.get(i, j)>0 && mat.get(i, j)>0){
 							mat.set(i, j, (Math.log(corpusOccurrencesMap.size()/corpusDocOccurrences.get(i, j)))*(Math.log(mat.get(i, j))+1));
 						}
@@ -145,7 +149,7 @@ public class MatrixUtil {
 					}
 				}
 			}
-			outputMap.put(pair.getKey(), NormalizeToUnitLength(mat));
+			outputMap.put(pair.getKey(), mat);
 		}
 		return outputMap;
 	}

@@ -100,4 +100,5 @@ public class RevisedVectorSpaceModel {
 		Config.getInstance().exportConfig(configFilePath);
 		run();
 	}
+	
 }

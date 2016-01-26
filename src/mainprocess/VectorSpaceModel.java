@@ -29,7 +29,7 @@ public class VectorSpaceModel {
 		
 		String bugVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "bugVec").toString();
 		String codeVecFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "codeVec").toString();
-		VectorCreator.create(Paths.get(bugCorpusDirPath,"information").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath, "logtfidf");
+		VectorCreator.create(Paths.get(bugCorpusDirPath,"information").toString(), Paths.get(codeCorpusDirPath,"codeContentCorpus").toString(), bugVecFilePath, codeVecFilePath, "tfidf");
 				
 		String simMatFilePath=Paths.get(Config.getInstance().getIntermediateDir(), "VSMScore").toString();
 		VSMScore.generate(bugVecFilePath, codeVecFilePath, simMatFilePath);

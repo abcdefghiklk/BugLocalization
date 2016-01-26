@@ -1,5 +1,8 @@
 package utils;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,7 +28,39 @@ import edu.udo.cs.wvtool.util.WVToolException;
 import edu.udo.cs.wvtool.wordlist.WVTWordList;
 
 public class testWVWrapper {
-
+	public static void compare(String dirPath, String filePath) throws Exception{
+		HashMap<String, Integer> myMap = new HashMap<String, Integer>();
+		for(File oneFile:  new File(dirPath).listFiles()){
+			BufferedReader reader=new BufferedReader(new FileReader(oneFile));
+			String []str=reader.readLine().split(" ");
+			myMap.put(oneFile.getName(), str.length);
+			reader.close();
+		}
+		
+		BufferedReader reader=new BufferedReader(new FileReader(filePath));
+		String line=new String();
+		while((line=reader.readLine())!=null){
+			String []str=line.split("\t");
+			if(myMap.containsKey(str[0])){				
+				if(myMap.get(str[0])!=str[1].split(" ").length-1){
+					System.out.println("The length for "+str[0]+ " is not the same!");
+					System.out.println("BugLocator Result: "+ String.valueOf(str[1].split(" ").length-1));
+					System.out.println("my result: "+ String.valueOf(myMap.get(str[0])));
+				}
+				else{
+					System.out.println("The length for "+str[0]+ " is the same!");
+					System.out.println("BugLocator Result: "+ String.valueOf(str[1].split(" ").length-1));
+					System.out.println("my result: "+ String.valueOf(myMap.get(str[0])));
+				}
+			}
+			else{
+				System.out.println("The file "+ str[0] + "does not exist in my result!");
+			}
+		}
+		
+		reader.close();
+		
+	}
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		String corpusDirPath1="C:/Users/ql29/Documents/EClipse/Corpus/bug/information";
@@ -41,33 +76,16 @@ public class testWVWrapper {
 		String dstFilePath_tfidf="C:/Users/ql29/Documents/EClipse/vectors_tfidf";
 		String dstFilePath_logtfidf="C:/Users/ql29/Documents/EClipse/vectors_logtfidf";
 		String vocabularyFilePath="C:/Users/ql29/Documents/EClipse/vocabulary";
-		WVTFileInputList list = WVToolWrapper.extractCorpusFileList(corpusDirPath2);
-		WVTool wvt = new WVTool(false);
-		
-		WVTWordList dic = WVToolWrapper.extractCorpusDic(list);
-		
-		WVToolWrapper.generateCorpusVectors(corpusFilePath, list, dic);
-		WVToolWrapper.generateVectors(dstFilePath, WVToolWrapper.extractCorpusFileList(corpusDirPath1), dic, corpusFilePath, "tfidf");
-		
-//		dic.storePlain(new FileWriter(vocabularyFilePath));
-//		WordVectorWriter wvw_corpus= new WordVectorWriter(new FileWriter(corpusFilePath),true);
-//		WVTConfiguration config = new WVTConfiguration();
-//		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw_corpus));
-//		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TermOccurrences()));
-//		wvt.createVectors(WVToolWrapper.extractCorpusFileList(corpusDirPath2), config, dic);
-//		wvw_corpus.close();
+//		WVTFileInputList list = WVToolWrapper.extractCorpusFileList(corpusDirPath2);
+//		WVTool wvt = new WVTool(false);
 //		
-//		WordVectorWriter wvw_output= new WordVectorWriter(new FileWriter(dstFilePath),true);
-//		config = new WVTConfiguration();
-//		config.setConfigurationRule(WVTConfiguration.STEP_OUTPUT, new WVTConfigurationFact(wvw_output));
-//		config.setConfigurationRule(WVTConfiguration.STEP_VECTOR_CREATION, new WVTConfigurationFact(new TermOccurrences()));
-//		wvt.createVectors(WVToolWrapper.extractCorpusFileList(corpusDirPath1), config, dic);
-//		wvw_output.close();
+//		WVTWordList dic = WVToolWrapper.extractCorpusDic(list);
 //		
-//		HashMap<String, Matrix> corpusOccurrencesMap=MatrixUtil.loadVectors(corpusFilePath, dic.getNumWords());
-//		HashMap<String, Matrix> occurrencesMap=MatrixUtil.loadVectors(dstFilePath, dic.getNumWords());
-//		HashMap<String, Matrix> termFrequencyMap= MatrixUtil.convert(occurrencesMap,corpusOccurrencesMap, "tfidf");
-//		MatrixUtil.saveVectors(termFrequencyMap, dstFilePath_tfidf);
+//		WVToolWrapper.generateCorpusVectors(corpusFilePath, list, dic);
+//		WVToolWrapper.generateVectors(dstFilePath, WVToolWrapper.extractCorpusFileList(corpusDirPath1), dic, corpusFilePath, "tfidf");
+//		String dirPath="C:/Users/ql29/Documents/EClipse/Corpus/code/codeContentCorpus";
+//		String filePath= "C:/Users/ql29/Documents/EClipse/BugLocatorTool/tmp/codeCorpus.txt";
+//		compare(dirPath, filePath);
 	}
 
 }

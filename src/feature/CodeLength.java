@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import property.Property;
 import sourcecode.CodeFeatureExtractor;
 import sourcecode.SourceCodeCorpus;
 
@@ -17,7 +18,9 @@ public class CodeLength {
 		HashMap<String, Integer> fileClassLengthPairs= CodeFeatureExtractor.extractCodeLength(corpus);
 		HashMap<String, Double> normalizedLengths= normalize(fileClassLengthPairs);
 		HashMap<String, Double> nonLinearTransformedLengths= nonLinearTransform(normalizedLengths, "logistic");
+		
 		savePairs(dstFilePath, nonLinearTransformedLengths);
+//		CodeFeatureExtractor.saveCodeLength(dstFilePath, fileClassLengthPairs);
 	}
 	
 	/**
@@ -33,9 +36,7 @@ public class CodeLength {
 		int sum;
 		double avg=0;
 		double squaredError;
-		double deviation=0;
-		int maxVal=0;
-		int minVal=0;		
+		double deviation=0;	
 		boolean hasOutlier=true;
 		int iter=0;
 		while(hasOutlier && iter<1){
@@ -44,27 +45,17 @@ public class CodeLength {
 			for(int value:rawData.values()){
 				sum+=value;
 			}
-			avg=(sum+0.0d)/rawData.size();
+			avg=(sum+0.0d)/(double)(rawData.size());
 			squaredError= 0.0d;
 			for(int value:rawData.values()){
 				squaredError+=(value-avg)*(value-avg);
 			}
 			deviation= Math.sqrt(squaredError/rawData.size());
 			System.out.println("deviation="+deviation+" avg="+avg);
-			maxVal=Integer.MIN_VALUE;
-			minVal=Integer.MAX_VALUE;
 			ArrayList<String> removeItems=new ArrayList<String>();
 			for(Entry<String, Integer> pair:rawData.entrySet()){
 				int value=pair.getValue();
-				if(value<(avg+3*deviation) && value>(avg-3*deviation)){
-					if(value<minVal){
-						minVal=value;
-					}
-					if(maxVal<value){
-						maxVal=value;
-					}
-				}
-				else{
+				if(value>(avg+3*deviation) || value<(avg-3*deviation)){
 					removeItems.add(pair.getKey());
 					hasOutlier=true;
 				}
@@ -75,38 +66,22 @@ public class CodeLength {
 				}
 				iter++;
 			}
-			System.out.println(rawData.size());
-		}
-		System.out.println(originalPairs.size());	
-//		//Get the maximum and the minimum of the values 
-//		int maxVal=0;
-//		int minVal=-1;
-//		for(int value:originalPairs.values()){
-//			if(minVal==-1 || value<minVal){
-//				minVal=value;
-//			}
-//			if(maxVal<value){
-//				maxVal=value;
-//			}
-//		}
-		//scale each value using the maximum and minimum value
-//		System.out.println(maxVal);
-//		System.out.println(minVal);
-//		System.out.println(rawData.size());
+		}	
+
 		int min=0;
 		if(avg-3*deviation>0){
 			min=(int)(avg-3*deviation);
 		}
-
+		double max= avg+ 3*deviation;
 		for(Entry<String, Integer> pair: originalPairs.entrySet()){
-			if(pair.getValue()>maxVal){
-				normalizedPairs.put(pair.getKey(), 1.0d);
+			if(pair.getValue()>max){
+				normalizedPairs.put(pair.getKey(), 1.0);
 			}
 			else if(pair.getValue()<min){
-				normalizedPairs.put(pair.getKey(), 0.5d);
+				normalizedPairs.put(pair.getKey(), 0.0);
 			}
 			else{
-				double normalizedValue=6 * (pair.getValue()-min+0.0d)/(maxVal-min+0.0d);
+				double normalizedValue=6 * (pair.getValue()-min+0.0d)/(max-min+0.0d);
 //				if(normalizedValue>6){
 //					normalizedValue=6;
 //				}
@@ -116,6 +91,70 @@ public class CodeLength {
 		return normalizedPairs;
 	}
 	
+	
+//	/**
+//	 * Normalize to [0,1] using a linear transformation
+//	 * @param originalPairs
+//	 * @return
+//	 */
+//	public static HashMap<String, Double> normalize2(HashMap<String, Integer> originalPairs){
+//		HashMap<String, Double> normalizedPairs=new HashMap<String, Double>();
+//		int sum = 0;
+//		int count = 0;
+//		for(int value: originalPairs.values()){
+//			sum+=value;
+//			if(value!=0){
+//				count++;
+//			}
+//		}
+//		double average = sum / (double) count;
+//		double squareDevi = 0;
+//		
+//		for (int value: originalPairs.values()) {
+//			if (value != 0) {
+//				squareDevi += (value - average) * (value - average);
+//			}
+//		}
+//		double standardDevi = Math.sqrt(squareDevi / count);
+//		double low = average - 3 * standardDevi;
+//		double high = average + 3 * standardDevi;
+//
+//		int min = 0;
+//		if (low > 0)
+//			min = (int) low;
+//		for (String key : originalPairs.keySet()) {
+//			int len = originalPairs.get(key);
+//			double score = 0.0;
+//			double nor = getNormValue(len, high, min);
+//			if (len != 0) {
+//				if (len > low && len < high) {
+//
+//					score = getLenScore(nor);
+//				} else if (len < low) {
+//					score = 0.5;
+//				} else {
+//					score = 1.0;
+//				}
+//			} else {
+//				score = 0.0;
+//			}
+//			if (nor > 6)
+//				nor = 6;
+//			if (score < 0.5)
+//				score = 0.5f;
+//			normalizedPairs.put(key, score);
+//		}
+//		return normalizedPairs;
+//		
+//		
+//	}
+//	public static float getNormValue(int x, double max, double min) {
+//		return 6 * (float) (x - min) / (float) (max - min);
+//	}
+//
+//	public static double getLenScore(double len) {
+//		return (Math.exp(len) / (1 + Math.exp(len)));
+//	}
 	
 	/**
 	 * Nonlinear transform on the normalized pairs

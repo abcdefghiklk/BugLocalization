@@ -60,11 +60,17 @@ public class CodeDataProcessor {
 			String []terms= parser.getContent();
 			String fileContent=new String();
 			for(String term:terms){
-//				String stemmedTerm = Stem.stem(term.toLowerCase());
-				term = term.toLowerCase();
+				String stemmedTerm = Stem.stem(term.toLowerCase());
+//				term = term.toLowerCase();
 				if(!(Stopword.isKeyword(term) || Stopword.isEnglishStopword(term))){
-					fileContent+=term+" ";
+					fileContent+=stemmedTerm+" ";
 				}
+			}
+			
+			// append the class and method names in a file to the end of a file 
+			String []classAndMethodNameString= parser.getClassNameAndMethodName();
+			for(String term: classAndMethodNameString){
+				fileContent+=Stem.stem(term.toLowerCase())+" ";
 			}
 			oneCodeFile.setContent(fileContent);
 			

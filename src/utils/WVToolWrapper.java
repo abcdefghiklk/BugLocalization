@@ -12,8 +12,10 @@ import edu.udo.cs.wvtool.config.WVTConfiguration;
 import edu.udo.cs.wvtool.config.WVTConfigurationFact;
 import edu.udo.cs.wvtool.config.WVTConfigurationRule;
 import edu.udo.cs.wvtool.generic.output.WordVectorWriter;
+import edu.udo.cs.wvtool.generic.stemmer.DummyStemmer;
 import edu.udo.cs.wvtool.generic.stemmer.LovinsStemmerWrapper;
 import edu.udo.cs.wvtool.generic.stemmer.PorterStemmerWrapper;
+import edu.udo.cs.wvtool.generic.stemmer.ToLowerCaseConverter;
 import edu.udo.cs.wvtool.generic.stemmer.WVTStemmer;
 import edu.udo.cs.wvtool.generic.vectorcreation.TFIDF;
 import edu.udo.cs.wvtool.generic.vectorcreation.TermFrequency;
@@ -64,6 +66,7 @@ public class WVToolWrapper {
 	public static WVTWordList extractCorpusDic(WVTFileInputList list) throws Exception{
 		WVTool wvt = new WVTool(false);
 		WVTConfiguration config = new WVTConfiguration();
+//		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER, new WVTConfigurationFact(new DummyStemmer()));
 		final WVTStemmer porterStemmer = new PorterStemmerWrapper();
 		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER,
 				new WVTConfigurationRule() {
@@ -75,8 +78,6 @@ public class WVToolWrapper {
 		WVTStemmer stemmer = new LovinsStemmerWrapper();
 		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER,
 				new WVTConfigurationFact(stemmer));
-//		WVTStemmer stemmer = new PorterStemmerWrapper();
-//		config.setConfigurationRule(WVTConfiguration.STEP_STEMMER, new WVTConfigurationFact(stemmer));
 		WVTWordList dictionary = wvt.createWordList(list, config);
 		if(Config.getInstance().getMinCutoffFrequency()>0 && Config.getInstance().getMaxCutoffFrequency()>0){
 			dictionary.pruneByFrequency(Config.getInstance().getMinCutoffFrequency(), Config.getInstance().getMaxCutoffFrequency());
